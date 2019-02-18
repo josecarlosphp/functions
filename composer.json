@@ -1,0 +1,16 @@
+{
+    "name": "josecarlosphp/functions",
+    "description": "Common use functions, old school style.",
+    "keywords": [
+        "functions", "common", "use"
+    ],
+    "homepage": "https://github.com/josecarlosphp/functions",
+    "type": "library",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "José Carlos Cruz Parra",
+            "homepage": "https://programadorphpfreelance.com/"
+        }
+    ],
+}
