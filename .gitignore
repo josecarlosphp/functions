@@ -2,3 +2,5 @@
 /nbproject/
 /src/functions/email.php
 /src/functions/encode.php
+/src/encode.php
+/src/email.php
