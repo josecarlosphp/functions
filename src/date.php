@@ -321,7 +321,7 @@ function DaysDifferenceTime($desde, $hasta)
 
 function GetDiaSemana($dia, $mes, $ano)
 {
-    return date("w", mktime(0, 0, 0, $mes, $dia, $ano));
+    return date('w', mktime(0, 0, 0, $mes, $dia, $ano));
 }
 /**
  * Convierte una cadena de fecha en formato dd/mm/aaaa ó yyyy-mm-dd en un array(año, mes, día)
@@ -335,4 +335,18 @@ function datestr2datearr($date)
 		array(substr($date, 6, 4), substr($date, 3, 2), substr($date, 0, 2))
 		:
 		array(substr($date, 0, 4), substr($date, 5, 2), substr($date, 8, 2));
+}
+
+function time2tiempo($time)
+{
+	$dias = floor($time / 86400);
+	$time -= ($dias * 86400);
+
+	$horas = floor($time / 3600);
+	$time -= ($horas * 3600);
+
+	$minutos = floor($time / 60);
+	$time -= ($minutos * 60);
+
+	return array('d'=>$dias, 'H'=>$horas, 'i'=>$minutos, 's'=>$time);
 }
