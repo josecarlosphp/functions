@@ -350,3 +350,31 @@ function time2tiempo($time)
 
 	return array('d'=>$dias, 'H'=>$horas, 'i'=>$minutos, 's'=>$time);
 }
+
+function tiempo2str($tiempo)
+{
+    $r = '';
+	$sep = '';
+
+	if($tiempo['d'] > 0)
+	{
+		$r .= sprintf('%u %s', $tiempo['d'], $tiempo['d'] == 1 ? 'día' : 'días');
+		$sep = ', ';
+	}
+
+	if($tiempo['d'] > 0 || $tiempo['H'] > 0)
+	{
+		$r .= sprintf('%s%u %s', $sep, $tiempo['H'], $tiempo['H'] == 1 ? 'hora' : 'horas');
+		$sep = ', ';
+	}
+
+	if($tiempo['d'] > 0 || $tiempo['H'] > 0 || $tiempo['i'] > 0)
+	{
+		$r .= sprintf('%s%u %s', $sep, $tiempo['i'], $tiempo['i'] == 1 ? 'minuto' : 'minutos');
+		$sep = ', ';
+	}
+
+	$r .= sprintf('%s%u %s', $sep, $tiempo['s'], $tiempo['s'] == 1 ? 'segundo' : 'segundos');
+
+	return $r;
+}
