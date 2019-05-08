@@ -21,7 +21,7 @@
  * @desc        Common use functions - sql.
  */
 
-use josecarlosphp\db\DB_Connection;
+use josecarlosphp\db\DbConnection;
 
 /**
  * @return string
@@ -104,7 +104,7 @@ function buildQuery_Update($data, $table, $ids=null, $devolverVacio=false)
 		$query .= sprintf("`%s` = '%s'", $keys[$c], addcslashes($data[$keys[$c]], "\\'"));
 	}
 
-	return $query.DB_Connection::ids2where($ids, $devolverVacio).";";
+	return $query.DbConnection::ids2where($ids, $devolverVacio).";";
 }
 /**
  * @return string
@@ -113,7 +113,7 @@ function buildQuery_Update($data, $table, $ids=null, $devolverVacio=false)
  */
 function buildQuery_Delete($table, $ids=null)
 {
-	return "DELETE FROM `".$table."`".DB_Connection::ids2where($ids).";";
+	return "DELETE FROM `".$table."`".DbConnection::ids2where($ids).";";
 }
 /**
  * Une una condición where y un filtro que puede contener where, order by,...
