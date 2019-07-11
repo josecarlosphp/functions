@@ -373,6 +373,33 @@ function validateCCC($str, $allowblank=false)
 	return $allowblank && $str == '';
 }
 /**
+ * Valida un código de cuenta IBAN
+ *
+ * @param string $str
+ * @param bool $allowblank
+ * @return bool
+ */
+function validateIBAN($str, $allowblank=false)
+{
+    $iban = mb_strtoupper(str_replace(array(' ', '-'), '', trim($str)));
+
+    if(validateString($iban, 24, 24, '0123456789'))
+    {
+        $letras = array('A'=>10, 'B'=>11, 'C'=>12, 'D'=>13, 'E'=>14, 'F'=>15, 'G'=>16,'H'=>17, 'I'=>18, 'J'=>19, 'K'=>20, 'L'=>21, 'M'=>22, 'N'=>23, 'O'=>24, 'P'=>25, 'Q'=>26, 'R'=>27, 'S'=>28, 'T'=>29, 'U'=>30, 'V'=>31, 'W'=>32, 'X'=>33, 'Y'=>34, 'Z'=>35);
+
+        $valorLetra1 = $letras[mb_substr($iban, 0, 1)];
+        $valorLetra2 = $letras[mb_substr($iban, 1, 1)];
+
+        $siguienteNumeros = mb_substr($iban, 2, 2);
+
+        $valor = mb_substr($iban, 4, mb_strlen($iban)).$valorLetra1.$valorLetra2.$siguienteNumeros;
+
+        return (bcmod($valor, 97) == 1);
+    }
+
+    return $allowblank && $str == '';
+}
+/**
  * Valida una fecha
  *
  * @param int $ano
