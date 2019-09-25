@@ -581,7 +581,7 @@ function xmlfile2csvfileB($xmlpath, $csvpath, $elementTag, $fieldsTags=array(), 
 					{
 						$vars = get_object_vars($item->$key);
 
-						if(empty($vars))
+                        if(empty($vars) || (phpversion() >= '7.2' && count($vars) == 1 && array_key_exists(0, $vars)))
 						{
 							$data[$key] = $trim ? trim((string)$item->$key) : (string)$item->$key;
 						}
