@@ -215,6 +215,30 @@ function getRandomFileExt($dir, $includedextensions, $includepath=false)
 	return $files[mt_rand(0, sizeof($files)-1)];
 }
 /**
+ * Obtiene el árbol de carpetas y archivos de un directorio.
+ *
+ * @param string $dir
+ * @return array
+ */
+function getTree($dir)
+{
+    $result = array();
+
+    $aux = getDirs($dir);
+    foreach($aux as $item)
+    {
+        $result[$item] = getTree(ponerBarra($dir).$item);
+    }
+
+    $aux = getFiles($dir);
+    foreach($aux as $item)
+    {
+        $result[$item] = $item;
+    }
+
+    return $result;
+}
+/**
  * @return int
  * @param $dir string
  * @param $extensions array
