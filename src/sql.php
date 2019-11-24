@@ -53,7 +53,7 @@ function buildQuery_Insert($data, $table, $onDuplicateKeyUpdate=false)
 		{
 			$query .= ', ';
 		}
-        $query .= sprintf("'%s'", addcslashes($data[$keys[$c]], "\\'"));
+        $query .= is_null($data[$keys[$c]]) ? 'NULL' : sprintf("'%s'", addcslashes($data[$keys[$c]], "\\'"));
 	}
 
 	$query .= ")";
@@ -68,7 +68,8 @@ function buildQuery_Insert($data, $table, $onDuplicateKeyUpdate=false)
 			{
 				$query .= ", ";
 			}
-            $query .= sprintf("`%s` = '%s'", $keys[$c], addcslashes($data[$keys[$c]], "\\'"));
+            $query .= sprintf("`%s` = ", $keys[$c]);
+            $query .= is_null($data[$keys[$c]]) ? 'NULL' : sprintf("'%s'", addcslashes($data[$keys[$c]], "\\'"));
 		}
 	}
 
@@ -101,7 +102,8 @@ function buildQuery_Update($data, $table, $ids=null, $devolverVacio=false)
 		{
 			$query .= ', ';
 		}
-		$query .= sprintf("`%s` = '%s'", $keys[$c], addcslashes($data[$keys[$c]], "\\'"));
+		$query .= sprintf("`%s` = ", $keys[$c]);
+        $query .= is_null($data[$keys[$c]]) ? 'NULL' : sprintf("'%s'", addcslashes($data[$keys[$c]], "\\'"));
 	}
 
 	return $query.DbConnection::ids2where($ids, $devolverVacio).";";
