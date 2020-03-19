@@ -171,6 +171,31 @@ function cogerTrozo($str, $pre, $sig)
     return $str;
 }
 
+function quitarTrozo($str, $pre, $sig, $multi=true)
+{
+    while(($posA = mb_strpos($str, $pre)) !== false)
+    {
+        $aux = mb_substr($str, 0, $posA);
+        $str = mb_substr($str, $posA + mb_strlen($pre));
+
+        $posB = mb_strpos($str, $sig);
+        if($posB === false)
+        {
+			$str = $aux;
+            break;
+        }
+
+        $str = $aux . mb_substr($str, $posB + mb_strlen($sig));
+
+        if(!$multi)
+        {
+            break;
+        }
+    }
+
+    return $str;
+}
+
 function stripstr($str, $ini, $fin)
 {
     while(($pos = mb_strpos($str, $ini)) !== false)
