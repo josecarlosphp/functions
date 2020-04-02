@@ -38,7 +38,7 @@ function truncar($str, $len, $ext="...", $html=true, $descartarEspacios=false, $
 		return htmlentities(truncar(html_entity_decode($str), $len, $ext, false, $descartarEspacios), $flags, $encoding);
 	}
 
-	return mb_strlen($descartarEspacios ? str_replace(' ', '', $str) : $str) > $len ? mb_substr($str,0,$len-mb_strlen($ext)).$ext : $str;
+	return mb_strlen($descartarEspacios ? str_replace(' ', '', $str) : $str) > $len ? trim(mb_substr($str, 0, $len-mb_strlen($ext))).$ext : $str;
 }
 /**
  * Quita las tildes y símbolos similares de una cadena.
