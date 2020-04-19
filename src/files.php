@@ -27,9 +27,9 @@
  * @param $evalonerror string
  * @desc If given file exists, includes it, if not, evals given code string ("false" by default).
  */
-function include_ifexists($file, $evalonerror="false;")
+function include_ifexists($file, $evalonerror='false')
 {
-	return file_exists($file) ? include($file) : eval($evalonerror);
+	return file_exists($file) ? include($file) : eval('return '.$evalonerror.';');
 }
 /**
  * @return mixed
@@ -37,9 +37,9 @@ function include_ifexists($file, $evalonerror="false;")
  * @param $evalonerror string
  * @desc If given file exists, includes_once it, if not, evals given code string ("false" by default).
  */
-function include_once_ifexists($file, $evalonerror="false")
+function include_once_ifexists($file, $evalonerror='false;')
 {
-	return file_exists($file) ? include_once($file) : eval($evalonerror);
+	return file_exists($file) ? include_once($file) : eval('return '.$evalonerror.';');
 }
 /**
  * @return mixed
@@ -47,9 +47,9 @@ function include_once_ifexists($file, $evalonerror="false")
  * @param $evalonerror string
  * @desc If given file exists, requires it, if not, evals given code string ("false" by default).
  */
-function require_ifexists($file, $evalonerror="false")
+function require_ifexists($file, $evalonerror='false;')
 {
-	return file_exists($file) ? require($file) : eval($evalonerror);
+	return file_exists($file) ? require($file) : eval('return '.$evalonerror.';');
 }
 /**
  * @return mixed
@@ -57,9 +57,9 @@ function require_ifexists($file, $evalonerror="false")
  * @param $evalonerror string
  * @desc If given file exists, requires_once it, if not, evals given code string ("false" by default).
  */
-function require_once_ifexists($file, $evalonerror="false")
+function require_once_ifexists($file, $evalonerror='false;')
 {
-	return file_exists($file) ? require_once($file) : eval($evalonerror);
+	return file_exists($file) ? require_once($file) : eval('return '.$evalonerror.';');
 }
 /**
  * @return array
@@ -79,19 +79,19 @@ function getDirs($dir,$includepath=false,$recursive=false)
 	$currentdir = getcwd();
 	if(chdir($dir))
 	{
-		$handle = opendir(".");
+		$handle = opendir('.');
 		while ($file = readdir($handle))
 		{
-			if(is_dir($file) && $file!="." && $file!="..")
+			if(is_dir($file) && $file!='.' && $file!='..')
 			{
-				$dirs[] = $includepath ? $dir."/".$file : $file;
+				$dirs[] = $includepath ? $dir.'/'.$file : $file;
 
 				if($recursive)
 				{
 					if($includepath)
 					{
 						chdir($currentdir);
-						$dirs = array_merge($dirs, getDirs($dir."/".$file,true,true));
+						$dirs = array_merge($dirs, getDirs($dir.'/'.$file,true,true));
 						chdir($dir);
 					}
 					else
@@ -137,15 +137,15 @@ function getFiles($dir,$excludedextensions=array(),$includepath=false,$recursive
 	$currentdir = getcwd();
 	if(chdir($dir))
 	{
-		$handle = opendir(".");
+		$handle = opendir('.');
 		while ($file = readdir($handle))
 		{
-			if(is_dir($file) && $file!="." && $file!=".." && $recursive)
+			if(is_dir($file) && $file!='.' && $file!='..' && $recursive)
 			{
 				if($includepath)
 				{
 					chdir($currentdir);
-					$files = array_merge($files, getFiles($dir."/".$file,$excludedextensions,true,true));
+					$files = array_merge($files, getFiles($dir.'/'.$file,$excludedextensions,true,true));
 					chdir($dir);
 				}
 				else
@@ -154,7 +154,7 @@ function getFiles($dir,$excludedextensions=array(),$includepath=false,$recursive
 			elseif(is_file($file) && !in_array(getExtension($file),$excludedextensions))
 			{
 				if($includepath)
-					$files[] = $dir."/".$file;
+					$files[] = $dir.'/'.$file;
 				else
 					$files[] = $file;
 			}
@@ -182,15 +182,15 @@ function getFilesExt($dir, $includedextensions, $includepath=false, $recursive=f
 	$currentdir = getcwd();
 	if(chdir($dir))
 	{
-		$handle = opendir(".");
+		$handle = opendir('.');
 		while(($file = readdir($handle)))
 		{
-			if(is_dir($file) && $file!="." && $file!=".." && $recursive)
+			if(is_dir($file) && $file!='.' && $file!='..' && $recursive)
 			{
 				if($includepath)
 				{
 					chdir($currentdir);
-					$files = array_merge($files, getFilesExt($dir."/".$file,$includedextensions,true,true));
+					$files = array_merge($files, getFilesExt($dir.'/'.$file,$includedextensions,true,true));
 					chdir($dir);
 				}
 				else
@@ -200,7 +200,7 @@ function getFilesExt($dir, $includedextensions, $includepath=false, $recursive=f
 			}
 			elseif(is_file($file) && in_array(getExtension($file),$includedextensions))
 			{
-				$files[] = $includepath ? $dir."/".$file : $file;
+				$files[] = $includepath ? $dir.'/'.$file : $file;
 			}
 		}
 		chdir($currentdir);
@@ -249,18 +249,18 @@ function countDirs($dir,$extensions=array(),$including=false)
 {
 	$currentdir = getcwd();
 	chdir($dir);
-	$handle = opendir(".");
+	$handle = opendir('.');
 	$count = 0;
 	while ($file = readdir($handle))
 	{
 		if($including)
 		{
-			if(is_dir($file) && $file!="." && $file!=".." && in_array(getExtension($file),$extensions))
+			if(is_dir($file) && $file!='.' && $file!='..' && in_array(getExtension($file),$extensions))
 				$count++;
 		}
 		else
 		{
-			if(is_dir($file) && $file!="." && $file!=".." && !in_array(getExtension($file),$extensions))
+			if(is_dir($file) && $file!='.' && $file!='..' && !in_array(getExtension($file),$extensions))
 				$count++;
 		}
 	}
@@ -278,7 +278,7 @@ function countFiles($dir,$extensions=array(),$including=false)
 {
 	$currentdir = getcwd();
 	chdir($dir);
-	$handle = opendir(".");
+	$handle = opendir('.');
 	$count = 0;
 	while ($file = readdir($handle))
 	{
@@ -377,10 +377,10 @@ function drainDir($dir, $createifnotexists=true, $mode=0755)
 	{
 		$currentdir = getcwd();
 		chdir($dir);
-		$handle = opendir(".");
+		$handle = opendir('.');
 		while($file = readdir($handle))
 		{
-			if(is_dir($file) && $file!="." && $file!="..")
+			if(is_dir($file) && $file!='.' && $file!='..')
 				deleteDir($file);
 			elseif(is_file($file))
 				unlink($file);
@@ -433,10 +433,10 @@ function is_emptyDir($dir)
 		$isempty = true;
 		$currentdir = getcwd();
 		chdir($dir);
-		$handle = opendir(".");
+		$handle = opendir('.');
 		while($file = readdir($handle))
 		{
-			if((is_dir($file) && $file!="." && $file!="..") || is_file($file))
+			if((is_dir($file) && $file!='.' && $file!='..') || is_file($file))
 			{
 				$isempty = false;
 				break;
@@ -460,10 +460,10 @@ function dirsize($dir)
 	$currentdir = getcwd();
 	if(chdir($dir))
 	{
-		$handle = opendir(".");
+		$handle = opendir('.');
 		while($file = readdir($handle))
 		{
-			if(is_dir($file) && $file!="." && $file!="..")
+			if(is_dir($file) && $file!='.' && $file!='..')
 			{
 				$size += dirsize($file);
 			}
@@ -572,19 +572,19 @@ function comprimir($filename)
 {
 	try
 	{
-		$fptr = fopen($filename, "rb");
+		$fptr = fopen($filename, 'rb');
 		$dump = fread($fptr, filesize($filename));
 		fclose($fptr);
 
 		//Comprime al máximo nivel, 9
 		$gzbackupData = gzencode($dump,9);
 
-		$fptr = fopen($filename.".gz", "wb");
+		$fptr = fopen($filename.'.gz', 'wb');
 		fwrite($fptr, $gzbackupData);
 		fclose($fptr);
 
 		//Devuelve el nombre del archivo comprimido
-		return $filename.".gz";
+		return $filename.'.gz';
 	}
 	catch(Exception $ex)
 	{
