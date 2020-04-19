@@ -121,7 +121,7 @@ function fechayhora2screen($fecha, $formato='Y-m-d')
 {
     $arr = descomponerFecha($fecha, $formato);
 
-    return sprintf('%04s-%02s-%02s <span class="mini">%02s:%02s</span>', $arr[0], $arr[1], $arr[2], $arr[3], $arr[4]);
+    return sprintf('%04s-%02s-%02s <span class="small mini">%02s:%02s</span>', $arr[0], $arr[1], $arr[2], $arr[3], $arr[4]);
 }
 
 function fechaYmd2dmY($fecha, $separador="-")
