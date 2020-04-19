@@ -78,10 +78,10 @@ function array_ToHTMLTableSimple($array, $numCols=0, $tableFormat="", $rowFormat
     }
 
 	if ($header) {
-		$header = "<th colspan=\"$numCols\">$header</th>";
+        $header = "<thead><tr><th colspan=\"$numCols\">$header</th></tr></thead>";
     }
 
-	$html = "<table $tableFormat>$header<tr $rowFormat>";
+	$html = "<table $tableFormat>$header<tbody><tr $rowFormat>";
 	$currentCol = 0;
 	foreach ($array as $element)	{
 		if (++$currentCol > $numCols) {
@@ -90,7 +90,7 @@ function array_ToHTMLTableSimple($array, $numCols=0, $tableFormat="", $rowFormat
 		}
 		$html .= "<td $cellFormat>$element</td>";
 	}
-	$html .= "</tr></table>";
+	$html .= "</tr></tbody></table>";
 
     return $html;
 }
@@ -99,12 +99,13 @@ function array_ToHTMLTable2xN($array, $tableFormat="", $rowFormat="", $cellForma
 {
 	$html = "<table {$tableFormat}>";
 	if ($header) {
-		$html .= "<th colspan=\"2\">{$header}</th>";
+		$html .= "<thead><tr><th colspan=\"2\">{$header}</th></tr></thead>";
     }
+    $html .= "<tbody>";
 	foreach ($array as $key=>$val) {
 		$html .= "<tr {$rowFormat}><td {$cellFormat}>{$key}</td><td>".(is_array($val) ? array_ToHTMLTable2xN($val) : $val)."</td></tr>";
 	}
-	$html .= "</table>";
+	$html .= "</tbody></table>";
 
 	return $html;
 }
@@ -122,13 +123,19 @@ function array_ToHTMLTable($array, $hasHeader=false, $tableFormat="", $rowFormat
 {
 	$html = "<table $tableFormat>";
 	$isHeader = $hasHeader;
+    $html .= $isHeader ? "<thead>" : "<tbody>";
 	if (is_array($array)) {
         foreach ($array as $subArray) {
 			$html .= array_ToHTMLRow($subArray, $isHeader, $rowFormat, $cellFormat, $distributeColumnsUniformly);
-			$isHeader = false;
+			if($isHeader)
+            {
+                $html .= "</thead><tbody>";
+                $isHeader = false;
+            }
 		}
     } else {
 		$html .= array_ToHTMLRow($array, $isHeader, $rowFormat, $cellFormat);
+        $html .= $isHeader ? "</thead>" : "</tbody>";
     }
 	$html .= "</table>";
 
@@ -459,7 +466,7 @@ function array_print_rows($rows, $formato=null)
 			$sep = '';
 			foreach($rows as $row)
 			{
-				$str .= $sep.(is_array($row) ? array_print_rows($row, 'js') : sprintf("'%s'", addcslashes($row, "'")));
+				$str .= $sep.(is_array($row) ? array_print_rows($row, 'js') : sprintf("'%s'", addcslashes($row, "\\'")));
 				$sep = ',';
 			}
 			$str .= ']';
