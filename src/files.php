@@ -80,7 +80,7 @@ function getDirs($dir,$includepath=false,$recursive=false)
 	if(chdir($dir))
 	{
 		$handle = opendir('.');
-		while ($file = readdir($handle))
+        while(($file = readdir($handle)) !== false)
 		{
 			if(is_dir($file) && $file!='.' && $file!='..')
 			{
@@ -138,7 +138,7 @@ function getFiles($dir,$excludedextensions=array(),$includepath=false,$recursive
 	if(chdir($dir))
 	{
 		$handle = opendir('.');
-		while ($file = readdir($handle))
+		while(($file = readdir($handle)) !== false)
 		{
 			if(is_dir($file) && $file!='.' && $file!='..' && $recursive)
 			{
@@ -183,7 +183,7 @@ function getFilesExt($dir, $includedextensions, $includepath=false, $recursive=f
 	if(chdir($dir))
 	{
 		$handle = opendir('.');
-		while(($file = readdir($handle)))
+		while(($file = readdir($handle)) !== false)
 		{
 			if(is_dir($file) && $file!='.' && $file!='..' && $recursive)
 			{
@@ -251,7 +251,7 @@ function countDirs($dir,$extensions=array(),$including=false)
 	chdir($dir);
 	$handle = opendir('.');
 	$count = 0;
-	while ($file = readdir($handle))
+	while(($file = readdir($handle)) !== false)
 	{
 		if($including)
 		{
@@ -280,7 +280,7 @@ function countFiles($dir,$extensions=array(),$including=false)
 	chdir($dir);
 	$handle = opendir('.');
 	$count = 0;
-	while ($file = readdir($handle))
+	while(($file = readdir($handle)) !== false)
 	{
 		if($including)
 		{
@@ -378,7 +378,7 @@ function drainDir($dir, $createifnotexists=true, $mode=0755)
 		$currentdir = getcwd();
 		chdir($dir);
 		$handle = opendir('.');
-		while($file = readdir($handle))
+        while(($file = readdir($handle)) !== false)
 		{
 			if(is_dir($file) && $file!='.' && $file!='..')
 				deleteDir($file);
@@ -434,7 +434,7 @@ function is_emptyDir($dir)
 		$currentdir = getcwd();
 		chdir($dir);
 		$handle = opendir('.');
-		while($file = readdir($handle))
+		while(($file = readdir($handle)) !== false)
 		{
 			if((is_dir($file) && $file!='.' && $file!='..') || is_file($file))
 			{
@@ -461,7 +461,7 @@ function dirsize($dir)
 	if(chdir($dir))
 	{
 		$handle = opendir('.');
-		while($file = readdir($handle))
+		while(($file = readdir($handle)) !== false)
 		{
 			if(is_dir($file) && $file!='.' && $file!='..')
 			{
@@ -497,7 +497,7 @@ function deleteFiles($dir, &$c, $exts=null, $mascara='', $recursivo=false, $anti
 		$currentdir = getcwd();
 		chdir($dir);
 		$handle = opendir('.');
-		while($file = readdir($handle))
+		while(($file = readdir($handle)) !== false)
 		{
 			if(is_file($file))
 			{
