@@ -66,9 +66,10 @@ function require_once_ifexists($file, $evalonerror='false;')
  * @param $dir string
  * @param $includepath bool
  * @param $recursive bool
+ * @param $mascara string
  * @desc Gets the names of the dirs existing in a given dir, with dir path if $includepath is true.
  */
-function getDirs($dir,$includepath=false,$recursive=false)
+function getDirs($dir, $includepath=false, $recursive=false, $mascara='')
 {
 	$pos = strrpos($dir,'/');
 	if($pos == (strlen($dir) - 1))
@@ -82,7 +83,7 @@ function getDirs($dir,$includepath=false,$recursive=false)
 		$handle = opendir('.');
         while(($file = readdir($handle)) !== false)
 		{
-			if(is_dir($file) && $file!='.' && $file!='..')
+			if(is_dir($file) && $file!='.' && $file!='..' && ($mascara == '' || mb_strpos($file, $mascara) !== false))
 			{
 				$dirs[] = $includepath ? $dir.'/'.$file : $file;
 
