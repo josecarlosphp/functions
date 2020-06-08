@@ -83,7 +83,7 @@ function getDirs($dir, $includepath=false, $recursive=false, $mascara='')
 		$handle = opendir('.');
         while(($file = readdir($handle)) !== false)
 		{
-			if(is_dir($file) && $file!='.' && $file!='..' && ($mascara == '' || mb_strpos($file, $mascara) !== false))
+			if($file != '.' && $file != '..' && is_dir($file) && ($mascara == '' || mb_strpos($file, $mascara) !== false))
 			{
 				$dirs[] = $includepath ? $dir.'/'.$file : $file;
 
@@ -141,7 +141,7 @@ function getFiles($dir,$excludedextensions=array(),$includepath=false,$recursive
 		$handle = opendir('.');
 		while(($file = readdir($handle)) !== false)
 		{
-			if(is_dir($file) && $file!='.' && $file!='..' && $recursive)
+			if($recursive && $file != '.' && $file != '..' && is_dir($file))
 			{
 				if($includepath)
 				{
@@ -186,7 +186,7 @@ function getFilesExt($dir, $includedextensions, $includepath=false, $recursive=f
 		$handle = opendir('.');
 		while(($file = readdir($handle)) !== false)
 		{
-			if(is_dir($file) && $file!='.' && $file!='..' && $recursive)
+			if($recursive && $file != '.' && $file != '..' && is_dir($file))
 			{
 				if($includepath)
 				{
@@ -256,13 +256,17 @@ function countDirs($dir,$extensions=array(),$including=false)
 	{
 		if($including)
 		{
-			if(is_dir($file) && $file!='.' && $file!='..' && in_array(getExtension($file),$extensions))
+			if($file != '.' && $file != '..' && is_dir($file) && in_array(getExtension($file), $extensions))
+            {
 				$count++;
+            }
 		}
 		else
 		{
-			if(is_dir($file) && $file!='.' && $file!='..' && !in_array(getExtension($file),$extensions))
+			if($file != '.' && $file != '..' && is_dir($file) && !in_array(getExtension($file), $extensions))
+            {
 				$count++;
+            }
 		}
 	}
 	chdir($currentdir);
@@ -381,10 +385,14 @@ function drainDir($dir, $createifnotexists=true, $mode=0755)
 		$handle = opendir('.');
         while(($file = readdir($handle)) !== false)
 		{
-			if(is_dir($file) && $file!='.' && $file!='..')
+			if($file != '.' && $file != '..' && is_dir($file))
+            {
 				deleteDir($file);
+            }
 			elseif(is_file($file))
+            {
 				unlink($file);
+            }
 		}
 		closedir($handle);
 		chdir($currentdir);
@@ -437,7 +445,7 @@ function is_emptyDir($dir)
 		$handle = opendir('.');
 		while(($file = readdir($handle)) !== false)
 		{
-			if((is_dir($file) && $file!='.' && $file!='..') || is_file($file))
+			if(($file != '.' && $file != '..' && is_dir($file)) || is_file($file))
 			{
 				$isempty = false;
 				break;
@@ -464,7 +472,7 @@ function dirsize($dir)
 		$handle = opendir('.');
 		while(($file = readdir($handle)) !== false)
 		{
-			if(is_dir($file) && $file!='.' && $file!='..')
+			if($file != '.' && $file != '..' && is_dir($file))
 			{
 				$size += dirsize($file);
 			}
@@ -520,7 +528,7 @@ function deleteFiles($dir, &$c, $exts=null, $mascara='', $recursivo=false, $anti
                     }
                 }
 			}
-			elseif($recursivo && is_dir($file) && $file != '.' && $file != '..')
+			elseif($recursivo && $file != '.' && $file != '..' && is_dir($file))
 			{
 				$z = 0;
 				$ok &= deleteFiles($dir, $z, $exts, $mascara, true);
