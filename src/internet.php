@@ -689,18 +689,22 @@ function string2description($str, $html_entity_decode=false, $maxlen=180, $desvi
 
 	$cortada = false;
 
-	if($maxlen > 0)
+    if($maxlen > 0)
     {
+		$c = 0;
 		$pos = mb_strrpos($str, ' ');
-		$aux = mb_substr($str, 0, $pos);
-		$max = $maxlen+$desviacion;
-		while($pos !== false && mb_strlen($aux) > $max)
+		while($pos !== false && mb_strlen($aux = mb_substr($str, 0, $pos)) > $maxlen+$desviacion)
 		{
 			$str = $aux;
 			$pos = mb_strrpos($str, ' ');
-			$aux = mb_substr($str, 0, $pos);
 
 			$cortada = true;
+
+			$c++;
+			if($c > 1000)
+			{
+				break;
+			}
 		}
     }
 
