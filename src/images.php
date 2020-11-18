@@ -45,7 +45,9 @@ function createThumbnail($imagefile, $thumbwidth, $destinydir, $newname=null)
 	$thumb = imagecreatetruecolor($newwidth,$newheight);
 	$destinydir = dirname($destinydir."/x").'/';
 	if($newname != null && trim($newname) != '')
+    {
 		$newname = trim($newname);
+    }
 	else
 	{
 		$newname = str_replace(dirname($imagefile), '', $imagefile);
