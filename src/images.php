@@ -72,6 +72,9 @@ function createThumbnail($imagefile, $thumbwidth, $destinydir, $newname=null)
 		case IMAGETYPE_XBM:
 			$function_image_create = 'imagecreatefromxbm';
 			break;
+        case IMAGETYPE_WEBP:
+            $function_image_create = 'imagecreatefromwebp';
+			break;
 		case IMAGETYPE_SWF:
 		case IMAGETYPE_PSD:
 		case IMAGETYPE_BMP:
@@ -93,6 +96,9 @@ function createThumbnail($imagefile, $thumbwidth, $destinydir, $newname=null)
 				case 'gif':
 				   $function_image_create = 'imagecreatefromgif';
 				   break;
+				case 'webp':
+				   $function_image_create = 'imagecreatefromwebp';
+				   break;
 				case 'jpg':
 				case 'jpeg':
 				default:
@@ -109,6 +115,9 @@ function createThumbnail($imagefile, $thumbwidth, $destinydir, $newname=null)
 			break;
 		case 'gif':
 			$function_image_new = 'imagegif';
+			break;
+		case 'webp':
+			$function_image_new = 'imagewebp';
 			break;
 		case 'jpg':
 		case 'jpeg':
@@ -300,6 +309,10 @@ function resizeImage($imagefile, $size, $destinydir, $newname=null, $skiptype=0,
 				}
 				$function_image_new = 'imagegif';
 				break;
+            case 'webp':
+                //TODO: Transparencia ¿se hará como para png?
+                $function_image_new = 'imagewebp';
+                break;
 			case 'jpg':
 			case 'jpeg':
 			default:
@@ -378,6 +391,10 @@ function resizeImage($imagefile, $size, $destinydir, $newname=null, $skiptype=0,
 				}
 				$function_image_new = 'imagegif';
 				break;
+            case 'webp':
+                //TODO: Transparencia ¿se hará como para png?
+                $function_image_new = 'imagewebp';
+                break;
 			case 'jpg':
 			case 'jpeg':
 			default:
@@ -466,6 +483,9 @@ function watermark($imagepath, $watermarkpath, $outputpath, $xAlign='middle', $y
 		case 'gif':
 			$function = 'imagecreatefromgif';
 			break;
+		case 'webp':
+			$function = 'imagecreatefromwebp';
+			break;
 		case 'jpg':
 		case 'jpeg':
 		default:
@@ -482,6 +502,9 @@ function watermark($imagepath, $watermarkpath, $outputpath, $xAlign='middle', $y
 				break;
 			case 'gif':
 				$function = 'imagecreatefromgif';
+				break;
+			case 'webp':
+				$function = 'imagecreatefromwebp';
 				break;
 			case 'jpg':
 			case 'jpeg':
@@ -577,6 +600,8 @@ function getExtensionImg($file)
             return 'jpg';
         case IMAGETYPE_PNG:
             return 'png';
+        case IMAGETYPE_WEBP:
+            return 'webp';
         case IMAGETYPE_SWF:
             return 'swf';
         case IMAGETYPE_PSD:
