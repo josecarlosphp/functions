@@ -39,6 +39,14 @@ function buildQuery_Insert($data, $table, $onDuplicateKeyUpdate=false)
         {
             $data[$keys[$c]] = serialize($data[$keys[$c]]);
         }
+        elseif($data[$keys[$c]] === true)
+        {
+            $data[$keys[$c]] = 1;
+        }
+        elseif($data[$keys[$c]] === false)
+        {
+            $data[$keys[$c]] = 0;
+        }
 
 		if($c > 0)
 		{
@@ -96,6 +104,14 @@ function buildQuery_Update($data, $table, $ids=null, $devolverVacio=false)
         if(is_array($data[$keys[$c]]) || is_object($data[$keys[$c]]))
         {
             $data[$keys[$c]] = serialize($data[$keys[$c]]);
+        }
+        elseif($data[$keys[$c]] === true)
+        {
+            $data[$keys[$c]] = 1;
+        }
+        elseif($data[$keys[$c]] === false)
+        {
+            $data[$keys[$c]] = 0;
         }
 
 		if($c > 0)
