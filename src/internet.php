@@ -29,11 +29,11 @@
  * @param string $validchars
  * @return string
  */
-function GenerateRandomPass($minlen=7, $maxlen=12, $validchars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+function GenerateRandomPass($minlen=7, $maxlen=12, $validchars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
 {
 	$len = mt_rand($minlen, $maxlen);
 	$max = strlen($validchars)-1;
-	$pass = "";
+	$pass = '';
 	for($c=0; $c<$len; $c++)
 	{
 		$pass .= substr($validchars, mt_rand(0, $max), 1);
@@ -107,7 +107,11 @@ function GenerateRandomKey($longitud=0, $conletrasmin=true, $conletrasmay=true, 
 		return $key;
 	}
 
-	$longitud = $longitud ? $longitud : 6;
+	if($longitud <= 0)
+    {
+        $longitud = 6;
+    }
+
 	$opciones = array();
 	if($connumeros)
 	{
@@ -178,7 +182,7 @@ function GetClientIP()
  */
 function VerifyUrl($url)
 {
-	return @fopen($url, "r");
+	return @fopen($url, 'r');
 }
 /**
  * @desc Lo mismo que el modificador url_format creado para Smarty, pero con la opción de aplicar o no htmlentities
@@ -189,27 +193,27 @@ function UrlFormat($url, $shorturl=false, $htmlentities=true, $flags=ENT_COMPAT,
 
 	if($shorturl)
 	{
-		$indexphp_pos = strpos($url, "index.php?");
-		$quest_pos = strpos($url, "?");
+		$indexphp_pos = strpos($url, 'index.php?');
+		$quest_pos = strpos($url, '?');
 		$url = substr($url, 0, $indexphp_pos).substr($url, $quest_pos+1);
-		$sharp_pos = strpos($url, "#");
+		$sharp_pos = strpos($url, '#');
 		if($sharp_pos)
 		{
 			$sharp_txt = substr($url, $sharp_pos);
 			$url = substr($url, 0, $sharp_pos);
 		}
-		$items = split("&", $url);
-		$url = "";
+		$items = split('&', $url);
+		$url = '';
 		foreach ($items as $item)
 		{
-			$url .= substr($item, 0, strpos($item, "="))."-";
-			$url .= substr($item, strpos($item, "=")+1)."-";
+			$url .= substr($item, 0, strpos($item, '=')).'-';
+			$url .= substr($item, strpos($item, '=')+1).'-';
 		}
-		$url = substr($url, 0, strlen($url)-1).".html";
+		$url = substr($url, 0, strlen($url)-1).'.html';
 		if($sharp_pos)
 			$url .= $sharp_txt;
 	}
-	return $htmlentities ? htmlentities(str_replace(" ", "20%", $url), $flags, $encoding) : str_replace(" ", "20%", $url);
+	return $htmlentities ? htmlentities(str_replace(' ', '20%', $url), $flags, $encoding) : str_replace(' ', '20%', $url);
 }
 /**
  * @param string $name
@@ -238,21 +242,22 @@ function UserAgentIsAnExplorer($useragent=null)
 {
 	if(is_null($useragent))
 	{
-		$useragent = $_SERVER["HTTP_USER_AGENT"];
+		$useragent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 	}
-	return (strpos($useragent, "Nav") !== false
-		|| strpos($useragent, "Gold") !== false
-		|| strpos($useragent, "X11") !== false
-		|| strpos($useragent, "Mozilla") !== false
-		|| strpos($useragent, "Netscape") !== false
-		|| strpos($useragent, "MSIE") !== false
-		|| strpos($useragent, "Lynx") !== false
-		|| strpos($useragent, "Opera") !== false
-		|| strpos($useragent, "Konqueror") !== false)
-		&& (strpos($useragent, "Google") === false || strpos($useragent, "Chrome") !== false)
-		&& strpos($useragent, "Yahoo") === false
-		&& strpos($useragent, "Crawler") === false
-		&& strpos($useragent, "robot") === false
+	return $useragent != ''
+        && (strpos($useragent, 'Nav') !== false
+            || strpos($useragent, 'Gold') !== false
+            || strpos($useragent, 'X11') !== false
+            || strpos($useragent, 'Mozilla') !== false
+            || strpos($useragent, 'Netscape') !== false
+            || strpos($useragent, 'MSIE') !== false
+            || strpos($useragent, 'Lynx') !== false
+            || strpos($useragent, 'Opera') !== false
+            || strpos($useragent, 'Konqueror') !== false)
+		&& (strpos($useragent, 'Google') === false || strpos($useragent, 'Chrome') !== false)
+		&& strpos($useragent, 'Yahoo') === false
+		&& strpos($useragent, 'Crawler') === false
+		&& strpos($useragent, 'robot') === false
 		;
 }
 /**
@@ -267,7 +272,7 @@ function FiltrarMetacaracteres(&$data, $key=null, $striptags=false, $addslashes=
 {
 	if(is_array($data))
 	{
-		array_walk($data, "FiltrarMetacaracteres", array($striptags, $addslashes));
+		array_walk($data, 'FiltrarMetacaracteres', array($striptags, $addslashes));
 	}
 	else
 	{
@@ -287,7 +292,7 @@ function FiltrarMetacaracteres(&$data, $key=null, $striptags=false, $addslashes=
  * @param array $charsToClean
  * @return mixed
  */
-function LimpiarData($data, $charsToClean=array(";",",",".","\\","/"))
+function LimpiarData($data, $charsToClean=array(';', ',', '.', '\\', '/'))
 {
 	if(is_array($data))
 	{
@@ -297,7 +302,7 @@ function LimpiarData($data, $charsToClean=array(";",",",".","\\","/"))
 		}
 		return $data;
 	}
-	return str_replace($charsToClean, "", $data);
+	return str_replace($charsToClean, '', $data);
 }
 
 function reemplazarCaracteresRaros($str, $ponerEnMinusculas=false)
@@ -423,11 +428,11 @@ function GetGeoInfo($ip='', $que='', $defaultip='clientip')
 			$aux = substr($aux, strpos($aux, 'Country:')+8);
 			$html = trim(substr($aux, 0, strpos($aux, '</a>')));
 			$aux = substr($aux, strpos($aux, 'Country code:</span></td>')+26);
-			$html .= " ".trim(substr($aux, 0, strpos($aux, '</td>')));
+			$html .= ' '.trim(substr($aux, 0, strpos($aux, '</td>')));
 			$aux = substr($aux, strpos($aux, 'Region:')+7);
-			$html .= " ".trim(substr($aux, 0, strpos($aux, '</a>')));
+			$html .= ' '.trim(substr($aux, 0, strpos($aux, '</a>')));
 			$aux = substr($aux, strpos($aux, 'City:</span></td>')+17);
-			$html .= " ".trim(substr($aux, 0, strpos($aux, '</td>')));
+			$html .= ' '.trim(substr($aux, 0, strpos($aux, '</td>')));
 			break;
 		case 'array':
 		default:
@@ -489,7 +494,7 @@ function GetURLContents($url, $useragent='', $extraOpt=null, $devolverElError=tr
 		$str = curl_exec($ch);
 		if($str === false && $devolverElError)
 		{
-			$str = "Error ".curl_errno($ch).": ".curl_error($ch);
+			$str = 'Error '.curl_errno($ch).': '.curl_error($ch);
 		}
 		curl_close($ch);
 	}
@@ -689,22 +694,18 @@ function string2description($str, $html_entity_decode=false, $maxlen=180, $desvi
 
 	$cortada = false;
 
-    if($maxlen > 0)
+	if($maxlen > 0)
     {
-		$c = 0;
 		$pos = mb_strrpos($str, ' ');
-		while($pos !== false && mb_strlen($aux = mb_substr($str, 0, $pos)) > $maxlen+$desviacion)
+		$aux = mb_substr($str, 0, $pos);
+		$max = $maxlen+$desviacion;
+		while($pos !== false && mb_strlen($aux) > $max)
 		{
 			$str = $aux;
 			$pos = mb_strrpos($str, ' ');
+			$aux = mb_substr($str, 0, $pos);
 
 			$cortada = true;
-
-			$c++;
-			if($c > 1000)
-			{
-				break;
-			}
 		}
     }
 
@@ -834,48 +835,4 @@ function pingDomain($domain, &$errno=null, &$errstr=null, $timeout=10)
     }
 
 	return $status;
-}
-/**
- * do the same than parse_str without max_input_vars limitation:
- * Parses $string as if it were the query string passed via a URL and sets variables in the current scope.
- * @param $string array string to parse (not altered like in the original parse_str(), use the second parameter!)
- * @param $result array  If the second parameter is present, variables are stored in this variable as array elements
- * @return bool true or false if $string is an empty string
- *
- * @author rubo77 at https://gist.github.com/rubo77/6821632
- * */
-function my_parse_str($string, &$result)
-{
-    if ($string === '') {
-        return false;
-    }
-
-    $result = array();
-    // find the pairs "name=value"
-    $pairs = explode('&', $string);
-    foreach ($pairs as $pair) {
-        // use the original parse_str() on each element
-        $params = array();
-        parse_str($pair, $params);
-        $k = key($params);
-        if (!isset($result[$k])) {
-            $result += $params;
-        } else {
-            $result[$k] = array_merge_recursive_distinct($result[$k], $params[$k]);
-        }
-    }
-    return true;
-}
-// better recursive array merge function listed on the array_merge_recursive PHP page in the comments
-function array_merge_recursive_distinct(array &$array1, array &$array2)
-{
-    $merged = $array1;
-    foreach ($array2 as $key => &$value) {
-        if (is_array($value) && isset($merged [$key]) && is_array($merged [$key])) {
-            $merged [$key] = array_merge_recursive_distinct($merged [$key], $value);
-        } else {
-            $merged [$key] = $value;
-        }
-    }
-    return $merged;
 }
