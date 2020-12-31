@@ -244,6 +244,7 @@ function UserAgentIsAnExplorer($useragent=null)
 	{
 		$useragent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 	}
+
 	return $useragent != ''
         && (strpos($useragent, 'Nav') !== false
             || strpos($useragent, 'Gold') !== false
@@ -259,6 +260,28 @@ function UserAgentIsAnExplorer($useragent=null)
 		&& strpos($useragent, 'Crawler') === false
 		&& strpos($useragent, 'robot') === false
 		;
+}
+
+function UserAgentIsBot($useragent=null, $customBots='', $defaultBots='Teoma,alexa,froogle,Gigabot,inktomi,looksmart,URL_Spider_SQL,Firefly,NationalDirectory,AskJeeves,TECNOSEEK,InfoSeek,WebFindBot,girafabot,crawler,www.galaxy.com,Googlebot,Scooter,TechnoratiSnoop,Rankivabot,Mediapartners-Google,Sogouwebspider,WebAltaCrawler,TweetmemeBot,Butterfly,Twitturls,Me.dium,Twiceler')
+{
+    if(is_null($useragent))
+	{
+		$useragent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+	}
+
+    if($useragent == '')
+    {
+        return true;
+    }
+
+    $botlist = explode(',', $defaultBots . ',' . $customBots);
+    foreach ($botlist as $bot) {
+        if ($bot && strpos($useragent, $bot) !== false) {
+            return true;
+        }
+    }
+
+    return false;
 }
 /**
  * Filtra metacaracteres convirtiéndolos a entidades html o eliminando las etiquetas.
