@@ -277,7 +277,7 @@ function UserAgentIsBot($useragent=null, $customBots='', $defaultBots='Teoma,ale
     $bots = explode(',', $defaultBots . ',' . $customBots);
     foreach ($bots as $bot) {
         $bot = trim($bot);
-        if ($bot && strpos($useragent, $bot) !== false) {
+        if ($bot && stripos($useragent, $bot) !== false) {
             return true;
         }
     }
