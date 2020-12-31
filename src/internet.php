@@ -274,8 +274,9 @@ function UserAgentIsBot($useragent=null, $customBots='', $defaultBots='Teoma,ale
         return true;
     }
 
-    $botlist = explode(',', $defaultBots . ',' . $customBots);
-    foreach ($botlist as $bot) {
+    $bots = explode(',', $defaultBots . ',' . $customBots);
+    foreach ($bots as $bot) {
+        $bot = trim($bot);
         if ($bot && strpos($useragent, $bot) !== false) {
             return true;
         }
