@@ -719,9 +719,9 @@ function bmp2gd($src, $dest = false)
 	        $j = 0;
 	        while($j < $scan_line_size)
 	        {
-	            $b = $scan_line{$j++};
-	            $g = $scan_line{$j++};
-	            $r = $scan_line{$j++};
+	            $b = $scan_line[$j++];
+	            $g = $scan_line[$j++];
+	            $r = $scan_line[$j++];
 	            $gd_scan_line .= "\x00$r$g$b";
 	        }
     	}
@@ -735,7 +735,7 @@ function bmp2gd($src, $dest = false)
 	        $j = 0;
 	        while($j < $scan_line_size)
 	        {
-	            $byte = ord($scan_line{$j++});
+	            $byte = ord($scan_line[$j++]);
 	            $p1 = chr($byte >> 4);
 	            $p2 = chr($byte & 0x0F);
 	            $gd_scan_line .= "$p1$p2";
@@ -748,7 +748,7 @@ function bmp2gd($src, $dest = false)
 	        $j = 0;
 	        while($j < $scan_line_size)
 	        {
-	            $byte = ord($scan_line{$j++});
+	            $byte = ord($scan_line[$j++]);
 	            $p1 = chr((int) (($byte & 0x80) != 0));
 	            $p2 = chr((int) (($byte & 0x40) != 0));
 	            $p3 = chr((int) (($byte & 0x20) != 0));
