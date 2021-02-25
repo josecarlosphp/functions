@@ -693,10 +693,10 @@ function bmp2gd($src, $dest = false)
 
     	while($j < $palette_size)
     	{
-	        $b = $palette{$j++};
-	        $g = $palette{$j++};
-	        $r = $palette{$j++};
-	        $a = $palette{$j++};
+	        $b = $palette[$j++];
+	        $g = $palette[$j++];
+	        $r = $palette[$j++];
+	        $a = $palette[$j++];
 
 	        $gd_palette .= "$r$g$b$a";
     	}
