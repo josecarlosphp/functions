@@ -198,10 +198,13 @@ function quitarTrozo($str, $pre, $sig, $multi=true)
 
 function stripstr($str, $ini, $fin)
 {
-    while(($pos = mb_strpos($str, $ini)) !== false)
-    {
+    while (($pos = mb_strpos($str, $ini)) !== false) {
         $aux = mb_substr($str, $pos + mb_strlen($ini));
-        $str = mb_substr($str, 0, $pos).mb_substr($aux, mb_strpos($aux, $fin) + mb_strlen($fin));
+        $str = mb_substr($str, 0, $pos);
+
+        if (($pos2 = mb_strpos($aux, $fin)) !== false) {
+            $str .= mb_substr($aux, $pos2 + mb_strlen($fin));
+        }
     }
 
     return $str;
@@ -209,10 +212,13 @@ function stripstr($str, $ini, $fin)
 
 function stripistr($str, $ini, $fin)
 {
-    while(($pos = mb_stripos($str, $ini)) !== false)
-    {
+    while (($pos = mb_stripos($str, $ini)) !== false) {
         $aux = mb_substr($str, $pos + mb_strlen($ini));
-        $str = mb_substr($str, 0, $pos).mb_substr($aux, mb_stripos($aux, $fin) + mb_strlen($fin));
+        $str = mb_substr($str, 0, $pos);
+
+        if (($pos2 = mb_stripos($aux, $fin)) !== false) {
+            $str .= mb_substr($aux, $pos2 + mb_strlen($fin));
+        }
     }
 
     return $str;
