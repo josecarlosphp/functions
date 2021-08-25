@@ -743,7 +743,7 @@ function string2description($str, $html_entity_decode=false, $maxlen=180, $desvi
 	}
 
 	$pos = mb_strlen($str) - 1;
-	while($pos && in_array(mb_substr($str, $pos), array(',', ';', '-', '_', '·', '\\', '/', '(', ')', '=', '+', '*', ':', '<', '>')))
+	while($pos && in_array(mb_substr($str, $pos), array(',', ';', '-', '_', '·', '\\', '/', '(', ')', '=', '+', '*', ':', '<'))) //, '>'
 	{
 		$str = mb_substr($str, 0, $pos);
 		$pos--;
