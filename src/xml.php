@@ -426,7 +426,18 @@ function xmlfile2csvfile($xmlpath, $csvpath, $elementTag, $fieldsTags, $delimite
 					//Etiqueta cerrada normalmente
 					//Msg('Etiqueta cerrada normalmente');
 
-					$data[$fieldIndex] = html_entity_decode($trim ? trim(mb_substr($line, 0, $pos)) : mb_substr($line, 0, $pos)); //Aplico html_entity_decode porque puede venir HTML con &lt;... //TODO: ¿esperar <![CDATA[]]> ?
+                    $aux = trim(mb_substr($line, 0, $pos));
+                    if (mb_substr($aux, 0, 9) == '<![CDATA[' && mb_substr($aux, -3) == ']]>') {
+                        $aux = mb_substr($aux, 9, -3);
+                    } else {
+                        $aux = mb_substr($line, 0, $pos);
+                    }
+
+                    if ($trim) {
+                        $aux = trim($aux);
+                    }
+
+                    $data[$fieldIndex] = html_entity_decode($aux); //Aplico html_entity_decode porque puede venir HTML con &lt;...
 
 					$line = mb_substr($line, $pos + mb_strlen('</'.$fieldsTags[$fieldIndex].'>'));
 
