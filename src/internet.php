@@ -704,7 +704,7 @@ function url2path($url)
  */
 function string2description($str, $html_entity_decode=false, $maxlen=180, $desviacion=20, $palabritas=array('a', 'de', 'por', 'para', 'y', 'sin', 'desde', 'con', 'e', 'o', 'ó', 'sus'), $flags=ENT_COMPAT, $encoding='UTF-8', $htmlentities=true)
 {
-    $str = str_replace(array("\n", "\r"), ' ', trim($str));
+    $str = trim(str_replace(array("\n", "\r"), ' ', $str));
 
 	if($html_entity_decode)
 	{
@@ -720,16 +720,24 @@ function string2description($str, $html_entity_decode=false, $maxlen=180, $desvi
 
 	if($maxlen > 0)
     {
+        $i = 0;
+        $iMax = 1000;
 		$pos = mb_strrpos($str, ' ');
 		$aux = mb_substr($str, 0, $pos);
-		$max = $maxlen+$desviacion;
+		$max = $maxlen + $desviacion;
 		while($pos !== false && mb_strlen($aux) > $max)
 		{
-			$str = $aux;
+            $str = $aux;
 			$pos = mb_strrpos($str, ' ');
 			$aux = mb_substr($str, 0, $pos);
 
 			$cortada = true;
+
+            $i++;
+            if ($i > $iMax) {
+                $str = mb_substr($str, 0, $maxlen);
+                break;
+            }
 		}
     }
 
