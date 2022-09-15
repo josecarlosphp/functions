@@ -363,7 +363,7 @@ function deleteDir($dir, $deleteevenifnotempty=true)
 		{
 			return rmdir($dir);
 		}
-		
+
 		return $deleteevenifnotempty ? drainDir($dir) && rmdir($dir) : false;
 	}
 
@@ -538,7 +538,7 @@ function deleteFiles($dir, &$c, $exts=null, $mascara='', $recursivo=false, $anti
 		closedir($handle);
 		chdir($currentdir);
 	}
-	
+
 	return $ok;
 }
 /**
@@ -600,3 +600,22 @@ function comprimir($filename)
 		return false;
 	}
 }*/
+
+function isParentDir($dir, $son)
+{
+    $ok = false;
+    $cwd = getcwd();
+    if (chdir($dir)) {
+        $dir = getcwd(); //Para que sea ruta absoluta
+        chdir($cwd);
+
+        if ($son && is_dir($aux = (is_file($son) ? dirname($son) : $son)) && chdir($aux)) {
+            if (mb_substr(getcwd(), 0, mb_strlen($dir)) == $dir) {
+                $ok = true;
+            }
+            chdir($cwd);
+        }
+    }
+
+    return $ok;
+}
