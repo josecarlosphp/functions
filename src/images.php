@@ -168,247 +168,252 @@ function resizeImage($imagefile, $size, $destinydir, $newname=null, $skiptype=0,
 
 	list($width, $height) = getimagesize($imagefile);
 
-	if(is_array($size))
-	{
-		$newwidth = $size[0];
-		$newheight = $size[1];
+    if ($width > 0 && $height > 0) {
 
-		if(!$newwidth && !$newheight)
-		{
-			$newwidth = $width;
-			$newheight = $height;
-		}
-		elseif(!$newwidth)
-		{
-			$newwidth = (int)(($width * $newheight) / $height);
-		}
-		elseif(!$newheight)
-		{
-			$newheight = (int)(($height * $newwidth) / $width);
-		}
-	}
-	else
-	{
-		if($width >= $height)
-		{
-			//Redimensionar conforme al ancho
-			$newwidth = $size;
-			$newheight = (int)(($height * $newwidth) / $width);
-		}
-		else
-		{
-			//Redimensionar conforme al alto
-			$newheight = $size;
-			$newwidth = (int)(($width * $newheight) / $height);
-		}
-	}
-
-	if($sindistorsion)
-	{
-		//Creamos la imagen con el color de fondo
-		$imagen_fondo = imagecreatetruecolor($newwidth, $newheight);
-		$color = imagecolorAllocate($imagen_fondo, $colordefondo[0], $colordefondo[1], $colordefondo[2]);
-		imagefill($imagen_fondo, 0, 0, $color);
-
-        if($sindistorsion === true)
+        if(is_array($size))
         {
-            $sindistorsion = 1;
+            $newwidth = $size[0];
+            $newheight = $size[1];
+
+            if(!$newwidth && !$newheight)
+            {
+                $newwidth = $width;
+                $newheight = $height;
+            }
+            elseif(!$newwidth)
+            {
+                $newwidth = (int)(($width * $newheight) / $height);
+            }
+            elseif(!$newheight)
+            {
+                $newheight = (int)(($height * $newwidth) / $width);
+            }
+        }
+        else
+        {
+            if($width >= $height)
+            {
+                //Redimensionar conforme al ancho
+                $newwidth = $size;
+                $newheight = (int)(($height * $newwidth) / $width);
+            }
+            else
+            {
+                //Redimensionar conforme al alto
+                $newheight = $size;
+                $newwidth = (int)(($width * $newheight) / $height);
+            }
         }
 
-		switch($sindistorsion)
-		{
-            case 3: //Anchura
-				$dst_w = $newwidth;
-				$dst_h = (int)(($height * $newwidth) / $width);
-				break;
-            case 2: //Altura
-				$dst_h = $newheight;
-				$dst_w = (int)(($width * $newheight) / $height);
-				break;
-            case 1: //El lado más largo
-			default:
-				if($newheight > $newwidth)
-				{
-					if($height >= $width)
-					{
-						$dst_w = $newwidth;
-						$dst_h = (int)(($height * $newwidth) / $width);
+        if($sindistorsion)
+        {
+            //Creamos la imagen con el color de fondo
+            $imagen_fondo = imagecreatetruecolor($newwidth, $newheight);
+            $color = imagecolorAllocate($imagen_fondo, $colordefondo[0], $colordefondo[1], $colordefondo[2]);
+            imagefill($imagen_fondo, 0, 0, $color);
 
-						if($dst_h > $newheight)
-						{
-							$dst_h = $newheight;
-							$dst_w = (int)(($width * $newheight) / $height);
-						}
-					}
-					else
-					{
-						$dst_h = $newheight;
-						$dst_w = (int)(($width * $newheight) / $height);
+            if($sindistorsion === true)
+            {
+                $sindistorsion = 1;
+            }
 
-						if($dst_w > $newwidth)
-						{
-							$dst_w = $newwidth;
-							$dst_h = (int)(($height * $newwidth) / $width);
-						}
-					}
-				}
-				else
-				{
-					if($height >= $width)
-					{
-						$dst_h = $newheight;
-						$dst_w = (int)(($width * $newheight) / $height);
+            switch($sindistorsion)
+            {
+                case 3: //Anchura
+                    $dst_w = $newwidth;
+                    $dst_h = (int)(($height * $newwidth) / $width);
+                    break;
+                case 2: //Altura
+                    $dst_h = $newheight;
+                    $dst_w = (int)(($width * $newheight) / $height);
+                    break;
+                case 1: //El lado más largo
+                default:
+                    if($newheight > $newwidth)
+                    {
+                        if($height >= $width)
+                        {
+                            $dst_w = $newwidth;
+                            $dst_h = (int)(($height * $newwidth) / $width);
 
-						if($dst_w > $newwidth)
-						{
-							$dst_w = $newwidth;
-							$dst_h = (int)(($height * $newwidth) / $width);
-						}
-					}
-					else
-					{
-						$dst_w = $newwidth;
-						$dst_h = (int)(($height * $newwidth) / $width);
+                            if($dst_h > $newheight)
+                            {
+                                $dst_h = $newheight;
+                                $dst_w = (int)(($width * $newheight) / $height);
+                            }
+                        }
+                        else
+                        {
+                            $dst_h = $newheight;
+                            $dst_w = (int)(($width * $newheight) / $height);
 
-						if($dst_h > $newheight)
-						{
-							$dst_h = $newheight;
-							$dst_w = (int)(($width * $newheight) / $height);
-						}
-					}
-				}
-				break;
-		}
+                            if($dst_w > $newwidth)
+                            {
+                                $dst_w = $newwidth;
+                                $dst_h = (int)(($height * $newwidth) / $width);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if($height >= $width)
+                        {
+                            $dst_h = $newheight;
+                            $dst_w = (int)(($width * $newheight) / $height);
 
-		//Posición de la imagen sobre el fondo
-		$dst_x = (int)(($newwidth-$dst_w)/2);
-		$dst_y = (int)(($newheight-$dst_h)/2);
+                            if($dst_w > $newwidth)
+                            {
+                                $dst_w = $newwidth;
+                                $dst_h = (int)(($height * $newwidth) / $width);
+                            }
+                        }
+                        else
+                        {
+                            $dst_w = $newwidth;
+                            $dst_h = (int)(($height * $newwidth) / $width);
 
-		//Creamos una versión redimensionada de la imagen para ponerla sobre el fondo
-		$source = imagecreatefromstring(file_get_contents($imagefile));
-		$thumb = imagecreatetruecolor($dst_w, $dst_h);
+                            if($dst_h > $newheight)
+                            {
+                                $dst_h = $newheight;
+                                $dst_w = (int)(($width * $newheight) / $height);
+                            }
+                        }
+                    }
+                    break;
+            }
 
-		switch($extForzada ? $extForzada : getExtension($newname))
-		{
-			case 'png':
-				imagealphablending($thumb, false);
-				imagesavealpha($thumb, true);
-				$transparent = imagecolorallocatealpha($thumb, $colordefondo[0], $colordefondo[1], $colordefondo[2], 127);
-				imagefilledrectangle($thumb, 0, 0, $dst_w, $dst_h, $transparent);
+            //Posición de la imagen sobre el fondo
+            $dst_x = (int)(($newwidth-$dst_w)/2);
+            $dst_y = (int)(($newheight-$dst_h)/2);
 
-				$function_image_new = 'imagepng';
-				break;
-			case 'gif':
-				$colorTransparencia = imagecolortransparent($source);
-				if($colorTransparencia > -1 && $colorTransparencia < imagecolorstotal($source)) //Si tiene transparencia y el índice de la transparencia está dentro de la paleta
-				{
-					$colorTransparente = imagecolorsforindex($source, $colorTransparencia);
-					$idColorTransparente = imagecolorallocatealpha($thumb, $colorTransparente['red'], $colorTransparente['green'], $colorTransparente['blue'], $colorTransparente['alpha']);
-					imagefill($thumb, 0, 0, $idColorTransparente);
-					imagecolortransparent($thumb, $idColorTransparente);
-				}
-				$function_image_new = 'imagegif';
-				break;
-            case 'webp':
-                //TODO: Transparencia ¿se hará como para png?
-                $function_image_new = 'imagewebp';
-                break;
-			case 'jpg':
-			case 'jpeg':
-			default:
-				$function_image_new = 'imagejpeg';
-				break;
-		}
+            //Creamos una versión redimensionada de la imagen para ponerla sobre el fondo
+            $source = imagecreatefromstring(file_get_contents($imagefile));
+            $thumb = imagecreatetruecolor($dst_w, $dst_h);
 
-		imagecopyresampled($thumb, $source, 0, 0, 0, 0, $dst_w, $dst_h, $width, $height);
+            switch($extForzada ? $extForzada : getExtension($newname))
+            {
+                case 'png':
+                    imagealphablending($thumb, false);
+                    imagesavealpha($thumb, true);
+                    $transparent = imagecolorallocatealpha($thumb, $colordefondo[0], $colordefondo[1], $colordefondo[2], 127);
+                    imagefilledrectangle($thumb, 0, 0, $dst_w, $dst_h, $transparent);
 
-		//Sobrepongo la imagen
-		imagecopyresized($imagen_fondo, $thumb, $dst_x, $dst_y, 0, 0, $dst_w, $dst_h, $dst_w, $dst_h);
+                    $function_image_new = 'imagepng';
+                    break;
+                case 'gif':
+                    $colorTransparencia = imagecolortransparent($source);
+                    if($colorTransparencia > -1 && $colorTransparencia < imagecolorstotal($source)) //Si tiene transparencia y el índice de la transparencia está dentro de la paleta
+                    {
+                        $colorTransparente = imagecolorsforindex($source, $colorTransparencia);
+                        $idColorTransparente = imagecolorallocatealpha($thumb, $colorTransparente['red'], $colorTransparente['green'], $colorTransparente['blue'], $colorTransparente['alpha']);
+                        imagefill($thumb, 0, 0, $idColorTransparente);
+                        imagecolortransparent($thumb, $idColorTransparente);
+                    }
+                    $function_image_new = 'imagegif';
+                    break;
+                case 'webp':
+                    //TODO: Transparencia ¿se hará como para png?
+                    $function_image_new = 'imagewebp';
+                    break;
+                case 'jpg':
+                case 'jpeg':
+                default:
+                    $function_image_new = 'imagejpeg';
+                    break;
+            }
 
-		$function_image_new($imagen_fondo, $destinydir.$newname);
+            imagecopyresampled($thumb, $source, 0, 0, 0, 0, $dst_w, $dst_h, $width, $height);
 
-		unset($imagen_fondo);
-	}
-	else
-	{
-		switch($skiptype)
-		{
-			case 1:
-				if($width >= $height)
-				{
-					if($newwidth < $width)
-					{
-						$newwidth = $width;
-						$newheight = $height;
-					}
-				}
-				elseif($newheight < $height)
-				{
-					$newheight = $height;
-					$newwidth = $width;
-				}
-				break;
-			case 2:
-				if($width >= $height)
-				{
-					if($newwidth > $width)
-					{
-						$newwidth = $width;
-						$newheight = $height;
-					}
-				}
-				elseif($newheight > $height)
-				{
-					$newheight = $height;
-					$newwidth = $width;
-				}
-				break;
-			default:
-				//nada
-				break;
-		}
+            //Sobrepongo la imagen
+            imagecopyresized($imagen_fondo, $thumb, $dst_x, $dst_y, 0, 0, $dst_w, $dst_h, $dst_w, $dst_h);
 
-		$source = imagecreatefromstring(file_get_contents($imagefile));
-		$thumb = imagecreatetruecolor($newwidth,$newheight);
-		switch($extForzada ? $extForzada : getExtension($newname))
-		{
-			case 'png':
-				imagealphablending($thumb, false);
-				imagesavealpha($thumb, true);
-				$transparent = imagecolorallocatealpha($thumb, $colordefondo[0], $colordefondo[1], $colordefondo[2], 127);
-				imagefilledrectangle($thumb, 0, 0, $newwidth, $newheight, $transparent);
+            $function_image_new($imagen_fondo, $destinydir.$newname);
 
-				$function_image_new = 'imagepng';
-				break;
-			case 'gif':
-				$colorTransparencia = imagecolortransparent($source);
-				if($colorTransparencia > -1 && $colorTransparencia < imagecolorstotal($source)) //Si tiene transparencia y el índice de la transparencia está dentro de la paleta
-				{
-					$colorTransparente = imagecolorsforindex($source, $colorTransparencia);
-					$idColorTransparente = imagecolorallocatealpha($thumb, $colorTransparente['red'], $colorTransparente['green'], $colorTransparente['blue'], $colorTransparente['alpha']);
-					imagefill($thumb, 0, 0, $idColorTransparente);
-					imagecolortransparent($thumb, $idColorTransparente);
-				}
-				$function_image_new = 'imagegif';
-				break;
-            case 'webp':
-                //TODO: Transparencia ¿se hará como para png?
-                $function_image_new = 'imagewebp';
-                break;
-			case 'jpg':
-			case 'jpeg':
-			default:
-				$function_image_new = 'imagejpeg';
-				break;
-		}
-		imagecopyresampled($thumb, $source, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
-		$function_image_new($thumb, $destinydir.$newname); //TODO: calidad (al menos para jpg)
-	}
+            unset($imagen_fondo);
+        }
+        else
+        {
+            switch($skiptype)
+            {
+                case 1:
+                    if($width >= $height)
+                    {
+                        if($newwidth < $width)
+                        {
+                            $newwidth = $width;
+                            $newheight = $height;
+                        }
+                    }
+                    elseif($newheight < $height)
+                    {
+                        $newheight = $height;
+                        $newwidth = $width;
+                    }
+                    break;
+                case 2:
+                    if($width >= $height)
+                    {
+                        if($newwidth > $width)
+                        {
+                            $newwidth = $width;
+                            $newheight = $height;
+                        }
+                    }
+                    elseif($newheight > $height)
+                    {
+                        $newheight = $height;
+                        $newwidth = $width;
+                    }
+                    break;
+                default:
+                    //nada
+                    break;
+            }
 
-	unset($source);
-	unset($thumb);
+            $source = imagecreatefromstring(file_get_contents($imagefile));
+            $thumb = imagecreatetruecolor($newwidth,$newheight);
+            switch($extForzada ? $extForzada : getExtension($newname))
+            {
+                case 'png':
+                    imagealphablending($thumb, false);
+                    imagesavealpha($thumb, true);
+                    $transparent = imagecolorallocatealpha($thumb, $colordefondo[0], $colordefondo[1], $colordefondo[2], 127);
+                    imagefilledrectangle($thumb, 0, 0, $newwidth, $newheight, $transparent);
 
-	return file_exists($destinydir.$newname);
+                    $function_image_new = 'imagepng';
+                    break;
+                case 'gif':
+                    $colorTransparencia = imagecolortransparent($source);
+                    if($colorTransparencia > -1 && $colorTransparencia < imagecolorstotal($source)) //Si tiene transparencia y el índice de la transparencia está dentro de la paleta
+                    {
+                        $colorTransparente = imagecolorsforindex($source, $colorTransparencia);
+                        $idColorTransparente = imagecolorallocatealpha($thumb, $colorTransparente['red'], $colorTransparente['green'], $colorTransparente['blue'], $colorTransparente['alpha']);
+                        imagefill($thumb, 0, 0, $idColorTransparente);
+                        imagecolortransparent($thumb, $idColorTransparente);
+                    }
+                    $function_image_new = 'imagegif';
+                    break;
+                case 'webp':
+                    //TODO: Transparencia ¿se hará como para png?
+                    $function_image_new = 'imagewebp';
+                    break;
+                case 'jpg':
+                case 'jpeg':
+                default:
+                    $function_image_new = 'imagejpeg';
+                    break;
+            }
+            imagecopyresampled($thumb, $source, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
+            $function_image_new($thumb, $destinydir.$newname); //TODO: calidad (al menos para jpg)
+        }
+
+        unset($source);
+        unset($thumb);
+
+        return file_exists($destinydir.$newname);
+    }
+
+    return false;
 }
 
 function marcaDeAgua($img_original, $img_marcadeagua, $calidad=100, $img_nueva=null, $posicion=null)
