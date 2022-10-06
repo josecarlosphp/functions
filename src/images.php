@@ -157,12 +157,9 @@ function resizeImage($imagefile, $size, $destinydir, $newname=null, $skiptype=0,
 {
 	$destinydir = dirname($destinydir."/x")."/";
 
-	if($newname != null && trim($newname) != '')
-	{
+	if ($newname != null && trim($newname) != '') {
 		$newname = trim($newname);
-	}
-	else
-	{
+	} else {
 		$newname = str_replace("\\", '', str_replace("/", '', str_replace(dirname($imagefile), '', $imagefile)));
 	}
 
@@ -170,55 +167,41 @@ function resizeImage($imagefile, $size, $destinydir, $newname=null, $skiptype=0,
 
     if ($width > 0 && $height > 0) {
 
-        if(is_array($size))
-        {
+        if (is_array($size)) {
             $newwidth = $size[0];
             $newheight = $size[1];
 
-            if(!$newwidth && !$newheight)
-            {
+            if (!$newwidth && !$newheight) {
                 $newwidth = $width;
                 $newheight = $height;
-            }
-            elseif(!$newwidth)
-            {
+            } elseif(!$newwidth) {
                 $newwidth = (int)(($width * $newheight) / $height);
-            }
-            elseif(!$newheight)
-            {
+            } elseif(!$newheight) {
                 $newheight = (int)(($height * $newwidth) / $width);
             }
-        }
-        else
-        {
-            if($width >= $height)
-            {
+        } else {
+            if ($width >= $height) {
                 //Redimensionar conforme al ancho
                 $newwidth = $size;
                 $newheight = (int)(($height * $newwidth) / $width);
-            }
-            else
-            {
+            } else {
                 //Redimensionar conforme al alto
                 $newheight = $size;
                 $newwidth = (int)(($width * $newheight) / $height);
             }
         }
 
-        if($sindistorsion)
-        {
+        if ($sindistorsion) {
             //Creamos la imagen con el color de fondo
             $imagen_fondo = imagecreatetruecolor($newwidth, $newheight);
             $color = imagecolorAllocate($imagen_fondo, $colordefondo[0], $colordefondo[1], $colordefondo[2]);
             imagefill($imagen_fondo, 0, 0, $color);
 
-            if($sindistorsion === true)
-            {
+            if ($sindistorsion === true) {
                 $sindistorsion = 1;
             }
 
-            switch($sindistorsion)
-            {
+            switch ($sindistorsion) {
                 case 3: //Anchura
                     $dst_w = $newwidth;
                     $dst_h = (int)(($height * $newwidth) / $width);
@@ -229,51 +212,38 @@ function resizeImage($imagefile, $size, $destinydir, $newname=null, $skiptype=0,
                     break;
                 case 1: //El lado más largo
                 default:
-                    if($newheight > $newwidth)
-                    {
-                        if($height >= $width)
-                        {
+                    if ($newheight > $newwidth) {
+                        if ($height >= $width) {
                             $dst_w = $newwidth;
                             $dst_h = (int)(($height * $newwidth) / $width);
 
-                            if($dst_h > $newheight)
-                            {
+                            if ($dst_h > $newheight) {
                                 $dst_h = $newheight;
                                 $dst_w = (int)(($width * $newheight) / $height);
                             }
-                        }
-                        else
-                        {
+                        } else {
                             $dst_h = $newheight;
                             $dst_w = (int)(($width * $newheight) / $height);
 
-                            if($dst_w > $newwidth)
-                            {
+                            if ($dst_w > $newwidth) {
                                 $dst_w = $newwidth;
                                 $dst_h = (int)(($height * $newwidth) / $width);
                             }
                         }
-                    }
-                    else
-                    {
-                        if($height >= $width)
-                        {
+                    } else {
+                        if ($height >= $width) {
                             $dst_h = $newheight;
                             $dst_w = (int)(($width * $newheight) / $height);
 
-                            if($dst_w > $newwidth)
-                            {
+                            if ($dst_w > $newwidth) {
                                 $dst_w = $newwidth;
                                 $dst_h = (int)(($height * $newwidth) / $width);
                             }
-                        }
-                        else
-                        {
+                        } else {
                             $dst_w = $newwidth;
                             $dst_h = (int)(($height * $newwidth) / $width);
 
-                            if($dst_h > $newheight)
-                            {
+                            if ($dst_h > $newheight) {
                                 $dst_h = $newheight;
                                 $dst_w = (int)(($width * $newheight) / $height);
                             }
@@ -290,8 +260,7 @@ function resizeImage($imagefile, $size, $destinydir, $newname=null, $skiptype=0,
             $source = imagecreatefromstring(file_get_contents($imagefile));
             $thumb = imagecreatetruecolor($dst_w, $dst_h);
 
-            switch($extForzada ? $extForzada : getExtension($newname))
-            {
+            switch ($extForzada ? $extForzada : getExtension($newname)) {
                 case 'png':
                     imagealphablending($thumb, false);
                     imagesavealpha($thumb, true);
@@ -302,8 +271,7 @@ function resizeImage($imagefile, $size, $destinydir, $newname=null, $skiptype=0,
                     break;
                 case 'gif':
                     $colorTransparencia = imagecolortransparent($source);
-                    if($colorTransparencia > -1 && $colorTransparencia < imagecolorstotal($source)) //Si tiene transparencia y el índice de la transparencia está dentro de la paleta
-                    {
+                    if ($colorTransparencia > -1 && $colorTransparencia < imagecolorstotal($source)) { //Si tiene transparencia y el índice de la transparencia está dentro de la paleta
                         $colorTransparente = imagecolorsforindex($source, $colorTransparencia);
                         $idColorTransparente = imagecolorallocatealpha($thumb, $colorTransparente['red'], $colorTransparente['green'], $colorTransparente['blue'], $colorTransparente['alpha']);
                         imagefill($thumb, 0, 0, $idColorTransparente);
@@ -330,37 +298,26 @@ function resizeImage($imagefile, $size, $destinydir, $newname=null, $skiptype=0,
             $function_image_new($imagen_fondo, $destinydir.$newname);
 
             unset($imagen_fondo);
-        }
-        else
-        {
-            switch($skiptype)
-            {
+        } else {
+            switch ($skiptype) {
                 case 1:
-                    if($width >= $height)
-                    {
-                        if($newwidth < $width)
-                        {
+                    if ($width >= $height) {
+                        if ($newwidth < $width) {
                             $newwidth = $width;
                             $newheight = $height;
                         }
-                    }
-                    elseif($newheight < $height)
-                    {
+                    } elseif($newheight < $height) {
                         $newheight = $height;
                         $newwidth = $width;
                     }
                     break;
                 case 2:
-                    if($width >= $height)
-                    {
-                        if($newwidth > $width)
-                        {
+                    if ($width >= $height) {
+                        if ($newwidth > $width) {
                             $newwidth = $width;
                             $newheight = $height;
                         }
-                    }
-                    elseif($newheight > $height)
-                    {
+                    } elseif ($newheight > $height) {
                         $newheight = $height;
                         $newwidth = $width;
                     }
@@ -372,8 +329,7 @@ function resizeImage($imagefile, $size, $destinydir, $newname=null, $skiptype=0,
 
             $source = imagecreatefromstring(file_get_contents($imagefile));
             $thumb = imagecreatetruecolor($newwidth,$newheight);
-            switch($extForzada ? $extForzada : getExtension($newname))
-            {
+            switch ($extForzada ? $extForzada : getExtension($newname)) {
                 case 'png':
                     imagealphablending($thumb, false);
                     imagesavealpha($thumb, true);
@@ -384,8 +340,7 @@ function resizeImage($imagefile, $size, $destinydir, $newname=null, $skiptype=0,
                     break;
                 case 'gif':
                     $colorTransparencia = imagecolortransparent($source);
-                    if($colorTransparencia > -1 && $colorTransparencia < imagecolorstotal($source)) //Si tiene transparencia y el índice de la transparencia está dentro de la paleta
-                    {
+                    if ($colorTransparencia > -1 && $colorTransparencia < imagecolorstotal($source)) { //Si tiene transparencia y el índice de la transparencia está dentro de la paleta
                         $colorTransparente = imagecolorsforindex($source, $colorTransparencia);
                         $idColorTransparente = imagecolorallocatealpha($thumb, $colorTransparente['red'], $colorTransparente['green'], $colorTransparente['blue'], $colorTransparente['alpha']);
                         imagefill($thumb, 0, 0, $idColorTransparente);
