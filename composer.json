@@ -12,5 +12,8 @@
             "name": "José Carlos Cruz Parra",
             "homepage": "https://josecarlosphp.com/"
         }
-    ]
+    ],
+    "require": {
+        "josecarlosphp/utils": "^0.1"
+    }
 }

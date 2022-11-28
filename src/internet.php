@@ -31,14 +31,7 @@
  */
 function GenerateRandomPass($minlen=7, $maxlen=12, $validchars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
 {
-	$len = mt_rand($minlen, $maxlen);
-	$max = strlen($validchars)-1;
-	$pass = '';
-	for($c=0; $c<$len; $c++)
-	{
-		$pass .= substr($validchars, mt_rand(0, $max), 1);
-	}
-	return $pass;
+	return \josecarlosphp\utils\Internet::generateRandomPass($minlen, $maxlen, $validchars);
 }
 /**
  * Genera una clave aleatoria.
@@ -66,87 +59,7 @@ function GenerateRandomPass($minlen=7, $maxlen=12, $validchars='abcdefghijklmnop
  */
 function GenerateRandomKey($longitud=0, $conletrasmin=true, $conletrasmay=true, $connumeros=true, $formato='')
 {
-	$key = '';
-
-	if($formato)
-	{
-		$scape = false;
-
-		for($c=0,$len=strlen($formato); $c<$len; $c++)
-		{
-			$char = substr($formato, $c, 1);
-
-			if($scape)
-			{
-				$key .= $char;
-				$scape = false;
-			}
-			else
-			{
-				switch($char)
-				{
-					case '\\':
-						$scape = true;
-						break;
-					case '1':
-						$key .= mt_rand(0, 9);
-						break;
-					case 'a':
-						$key .= chr(mt_rand(ord('a'), ord('z')));
-						break;
-					case 'A':
-						$key .= chr(mt_rand(ord('A'), ord('Z')));
-						break;
-					default:
-						$key .= GenerateRandomKey(1);
-						break;
-				}
-			}
-		}
-
-		return $key;
-	}
-
-	if($longitud <= 0)
-    {
-        $longitud = 6;
-    }
-
-	$opciones = array();
-	if($connumeros)
-	{
-		$opciones[] = 0;
-	}
-	if($conletrasmay)
-	{
-		$opciones[] = 2;
-	}
-	if($conletrasmin)
-	{
-		$opciones[] = 1;
-	}
-	$size = sizeof($opciones);
-	if($size == 0)
-	{
-		return null;
-	}
-	$size--;
-	for($c=0; strlen($key)<$longitud; $c++)
-	{
-		switch($opciones[mt_rand(0, $size)])
-		{
-			case 0:
-				$key .= mt_rand(0, 9);
-				break;
-			case 1:
-				$key .= chr(mt_rand(ord('a'), ord('z')));
-				break;
-			case 2:
-				$key .= chr(mt_rand(ord('A'), ord('Z')));
-				break;
-		}
-	}
-	return $key;
+	return \josecarlosphp\utils\Internet::generateRandomKey($longitud, $conletrasmin, $conletrasmay, $connumeros, $formato);
 }
 /**
  * @return string
@@ -154,26 +67,7 @@ function GenerateRandomKey($longitud=0, $conletrasmin=true, $conletrasmay=true, 
  */
 function GetClientIP()
 {
-	$server = isset($_SERVER) ? $_SERVER : $HTTP_SERVER_VARS;
-
-	$ip = $server['REMOTE_ADDR'];
-
-	if(empty($ip))
-		$ip = getenv('REMOTE_ADDR');
-	if(!empty($server['HTTP_CLIENT_IP']))
-		$ip = $server['HTTP_CLIENT_IP'];
-
-	$tmpip = getenv('HTTP_CLIENT_IP');
-	if(!empty($tmpip))
-		$ip = $tmpip;
-	if(!empty($server['HTTP_X_FORWARDED_FOR']))
-		$ip = preg_replace('/,.*/', '', $server['HTTP_X_FORWARDED_FOR']);
-
-	$tmpip = getenv('HTTP_X_FORWARDED_FOR');
-	if(!empty($tmpip))
-		$ip = preg_replace('/,.*/', '', $tmpip);
-
-	return $ip;
+	return \josecarlosphp\utils\Internet::getClientIp();
 }
 /**
  * @desc Verify if an url is valid (is online)
@@ -182,38 +76,14 @@ function GetClientIP()
  */
 function VerifyUrl($url)
 {
-	return @fopen($url, 'r');
+	return \josecarlosphp\utils\Internet::verifyUrl($url);
 }
 /**
  * @desc Lo mismo que el modificador url_format creado para Smarty, pero con la opción de aplicar o no htmlentities
  */
 function UrlFormat($url, $shorturl=false, $htmlentities=true, $flags=ENT_COMPAT, $encoding='UTF-8')
 {
-	$url = html_entity_decode($url, $flags, $encoding);
-
-	if($shorturl)
-	{
-		$indexphp_pos = strpos($url, 'index.php?');
-		$quest_pos = strpos($url, '?');
-		$url = substr($url, 0, $indexphp_pos).substr($url, $quest_pos+1);
-		$sharp_pos = strpos($url, '#');
-		if($sharp_pos)
-		{
-			$sharp_txt = substr($url, $sharp_pos);
-			$url = substr($url, 0, $sharp_pos);
-		}
-		$items = split('&', $url);
-		$url = '';
-		foreach ($items as $item)
-		{
-			$url .= substr($item, 0, strpos($item, '=')).'-';
-			$url .= substr($item, strpos($item, '=')+1).'-';
-		}
-		$url = substr($url, 0, strlen($url)-1).'.html';
-		if($sharp_pos)
-			$url .= $sharp_txt;
-	}
-	return $htmlentities ? htmlentities(str_replace(' ', '20%', $url), $flags, $encoding) : str_replace(' ', '20%', $url);
+	return \josecarlosphp\utils\Internet::urlFormat($url, $shorturl, $htmlentities, $flags, $encoding);
 }
 /**
  * @param string $name
@@ -221,18 +91,7 @@ function UrlFormat($url, $shorturl=false, $htmlentities=true, $flags=ENT_COMPAT,
  */
 function DownloadVirtualFile($name, $content)
 {
-	if(isset($_SERVER['HTTP_USER_AGENT']) && mb_strpos($_SERVER['HTTP_USER_AGENT'],'MSIE'))
-		header('Content-Type: application/force-download');
-	else
-		header('Content-Type: application/octet-stream');
-	if(headers_sent())
-		die('Ya ha sido enviada otra informaci&oacute;n al navegador, no se puede descargar el archivo.');
-	else
-	{
-		header('Content-Length: '.mb_strlen($content));
-		header('Content-disposition: attachment; filename='.$name);
-		die($content);
-	}
+	return \josecarlosphp\utils\Internet::downloadVirtualFile($name, $content);
 }
 /**
  * @return bool
@@ -240,49 +99,12 @@ function DownloadVirtualFile($name, $content)
  */
 function UserAgentIsAnExplorer($useragent=null)
 {
-	if(is_null($useragent))
-	{
-		$useragent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-	}
-
-	return $useragent != ''
-        && (strpos($useragent, 'Nav') !== false
-            || strpos($useragent, 'Gold') !== false
-            || strpos($useragent, 'X11') !== false
-            || strpos($useragent, 'Mozilla') !== false
-            || strpos($useragent, 'Netscape') !== false
-            || strpos($useragent, 'MSIE') !== false
-            || strpos($useragent, 'Lynx') !== false
-            || strpos($useragent, 'Opera') !== false
-            || strpos($useragent, 'Konqueror') !== false)
-		&& (strpos($useragent, 'Google') === false || strpos($useragent, 'Chrome') !== false)
-		&& strpos($useragent, 'Yahoo') === false
-		&& strpos($useragent, 'Crawler') === false
-		&& strpos($useragent, 'robot') === false
-		;
+	return \josecarlosphp\utils\Internet::userAgentIsAnExplorer($useragent);
 }
 
 function UserAgentIsBot($useragent=null, $customBots='', $defaultBots='Teoma,alexa,froogle,Gigabot,inktomi,looksmart,URL_Spider_SQL,Firefly,NationalDirectory,AskJeeves,TECNOSEEK,InfoSeek,WebFindBot,girafabot,crawler,www.galaxy.com,Googlebot,Scooter,TechnoratiSnoop,Rankivabot,Mediapartners-Google,Sogouwebspider,WebAltaCrawler,TweetmemeBot,Butterfly,Twitturls,Me.dium,Twiceler')
 {
-    if(is_null($useragent))
-	{
-		$useragent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-	}
-
-    if($useragent == '')
-    {
-        return true;
-    }
-
-    $bots = explode(',', $defaultBots . ',' . $customBots);
-    foreach ($bots as $bot) {
-        $bot = trim($bot);
-        if ($bot && stripos($useragent, $bot) !== false) {
-            return true;
-        }
-    }
-
-    return false;
+    return \josecarlosphp\utils\Internet::userAgentIsBot($useragent, $customBots, $defaultBots);
 }
 /**
  * Filtra metacaracteres convirtiéndolos a entidades html o eliminando las etiquetas.
@@ -294,18 +116,7 @@ function UserAgentIsBot($useragent=null, $customBots='', $defaultBots='Teoma,ale
  */
 function FiltrarMetacaracteres(&$data, $key=null, $striptags=false, $addslashes=true)
 {
-	if(is_array($data))
-	{
-		array_walk($data, 'FiltrarMetacaracteres', array($striptags, $addslashes));
-	}
-	else
-	{
-		if(!get_magic_quotes_gpc() && $addslashes)
-		{
-			$data = addslashes($data);
-		}
-		$data = $striptags ? strip_tags($data) : htmlentities($data);
-	}
+	return \josecarlosphp\utils\Internet::filterMetachars($data, $key, $striptags, $addslashes);
 }
 /**
  * Limpia datos frente a inyección sql y acceso a archivos,
@@ -318,49 +129,12 @@ function FiltrarMetacaracteres(&$data, $key=null, $striptags=false, $addslashes=
  */
 function LimpiarData($data, $charsToClean=array(';', ',', '.', '\\', '/'))
 {
-	if(is_array($data))
-	{
-		for($c=0,$size=sizeof($data); $c<$size; $c++)
-		{
-			$data[$c] = LimpiarData($data[$c], $charsToClean);
-		}
-		return $data;
-	}
-	return str_replace($charsToClean, '', $data);
+	return \josecarlosphp\utils\Internet::cleanData($data, $charsToClean);
 }
 
 function reemplazarCaracteresRaros($str, $ponerEnMinusculas=false)
 {
-	$patrones = array();
-
-	//No estoy haciendo todavía strtolower
-	$patrones[] = array(array('Á','À','Ä','Â'), 'A');
-	$patrones[] = array(array('É','È','Ë','Ê'), 'E');
-	$patrones[] = array(array('Í','È','Ï','Î'), 'I');
-	$patrones[] = array(array('Ó','Ò','Ö','Ô'), 'O');
-	$patrones[] = array(array('Ú','Ù','Ü','Û'), 'U');
-	$patrones[] = array('Ñ', 'N');
-	$patrones[] = array('Ç', 'C');
-
-	$patrones[] = array(array('á','à','ä','â','Ã¡'), 'a');
-	$patrones[] = array(array('é','è','ë','ê','Ã©'), 'e');
-	$patrones[] = array(array('í','ì','ï','î','Ã­'), 'i');
-	$patrones[] = array(array('ó','ò','ö','ô','Ã³'), 'o');
-	$patrones[] = array(array('ú','ù','ü','û'), 'u');
-	$patrones[] = array('ñ', 'n');
-	$patrones[] = array('ç', 'c');
-	$patrones[] = array('€', 'E');
-	$patrones[] = array('$', 'S');
-	$patrones[] = array('.', '-');
-
-	foreach($patrones as $patron)
-	{
-		$str = str_replace($patron[0], $patron[1], $str);
-	}
-
-	//Si hago el strtolower antes de reemplazar los caracteres, se me pierden las letras estas
-
-	return $ponerEnMinusculas ? mb_strtolower($str) : $str;
+	return \josecarlosphp\utils\Internet::reemplazarCaracteresRaros($str, $ponerEnMinusculas);
 }
 /**
  * Prepara una cadena para que forme parte de una url amigable
@@ -370,28 +144,7 @@ function reemplazarCaracteresRaros($str, $ponerEnMinusculas=false)
  */
 function string2friendly($str)
 {
-	$str = preg_replace('(([^0-9a-zA-Z_\.])+)', '-', reemplazarCaracteresRaros($str, true));
-
-	//Quitar los --
-	while(mb_strpos($str, '--') !== false)
-	{
-		$str = str_replace('--', '-', $str);
-	}
-
-	//Quitar los - del final
-	$aux = mb_strlen($str) - 1;
-	while(mb_substr($str, $aux) == '-')
-	{
-		$str = mb_substr($str, 0, $aux);
-	}
-
-	//Quitar los - del principio
-	while(mb_substr($str, 0, 1) == '-')
-	{
-		$str = mb_substr($str, 1);
-	}
-
-	return $str;
+	return \josecarlosphp\utils\Internet::string2friendly($str);
 }
 /**
  * Obtiene información sobre la localización de una IP concreta, la actual del visitante o la del servidor
@@ -404,88 +157,7 @@ function string2friendly($str)
  */
 function GetGeoInfo($ip='', $que='', $defaultip='clientip')
 {
-	if($ip == '')
-	{
-		switch($defaultip)
-		{
-			case 'clientip':
-				$ip = GetClientIP();
-				break;
-			case 'serverip':
-			default:
-				//nada
-				break;
-		}
-	}
-
-	$html = GetURLContents("http://www.geoiptool.com/?IP={$ip}");
-
-	switch(strtolower($que))
-	{
-		case 'paisnombre':
-		case 'countryname':
-			$html = substr($html, strpos($html, 'Country:')+8);
-			$html = trim(substr($html, 0, strpos($html, '</a>')));
-			break;
-		case 'paiscodigo':
-		case 'countrycode':
-			$html = substr($html, strpos($html, 'Country code:')+13);
-			$html = trim(substr($html, 0, strpos($html, '</tr>')));
-			break;
-		case 'region':
-			$html = substr($html, strpos($html, 'Region:')+7);
-			$html = trim(substr($html, 0, strpos($html, '</a>')));
-			break;
-		case 'ciudad':
-		case 'city':
-			$html = substr($html, strpos($html, 'City')+5);
-			$html = trim(substr($html, 0, strpos($html, '</tr>')));
-			break;
-		case 'todo':
-		case 'all':
-			$html = substr($html, strpos($html, 'Host Name:'));
-			$html = trim(substr($html, 0, strpos($html, 'New tool for your')));
-			break;
-		case 'resumen':
-		case 'summary':
-			$aux = $html;
-			$aux = substr($aux, strpos($aux, 'Country:')+8);
-			$html = trim(substr($aux, 0, strpos($aux, '</a>')));
-			$aux = substr($aux, strpos($aux, 'Country code:</span></td>')+26);
-			$html .= ' '.trim(substr($aux, 0, strpos($aux, '</td>')));
-			$aux = substr($aux, strpos($aux, 'Region:')+7);
-			$html .= ' '.trim(substr($aux, 0, strpos($aux, '</a>')));
-			$aux = substr($aux, strpos($aux, 'City:</span></td>')+17);
-			$html .= ' '.trim(substr($aux, 0, strpos($aux, '</td>')));
-			break;
-		case 'array':
-		default:
-			$array = array();
-			$aux = $html;
-			$aux = substr($aux, strpos($aux, 'Host Name:</span></td>')+22);
-			$array['hostname'] = trim(strip_tags(substr($aux, 0, strpos($aux, '</td>'))));
-			$aux = substr($aux, strpos($aux, 'IP Address:</span></td>')+23);
-			$array['ip'] = trim(strip_tags(substr($aux, 0, strpos($aux, '</td>'))));
-			$aux = substr($aux, strpos($aux, 'Country:')+8);
-			$array['countryname'] = trim(strip_tags(substr($aux, 0, strpos($aux, '</a>'))));
-			$aux = substr($aux, strpos($aux, 'Country code:</span></td>')+26);
-			$array['countrycode'] = trim(strip_tags(substr($aux, 0, strpos($aux, '</td>'))));
-			$aux = substr($aux, strpos($aux, 'Region:')+7);
-			$array['region'] = trim(strip_tags(substr($aux, 0, strpos($aux, '</a>'))));
-			$aux = substr($aux, strpos($aux, 'City:</span></td>')+17);
-			$array['city'] = trim(strip_tags(substr($aux, 0, strpos($aux, '</td>'))));
-			$aux = substr($aux, strpos($aux, 'Postal code:</span></td>')+24);
-			$array['postalcode'] = trim(strip_tags(substr($aux, 0, strpos($aux, '</td>'))));
-			$aux = substr($aux, strpos($aux, 'Calling code:</span></td>')+25);
-			$array['callingcode'] = trim(strip_tags(substr($aux, 0, strpos($aux, '</td>'))));
-			$aux = substr($aux, strpos($aux, 'Longitude:</span></td>')+23);
-			$array['longitude'] = trim(strip_tags(substr($aux, 0, strpos($aux, '</td>'))));
-			$aux = substr($aux, strpos($aux, 'Latitude:</span></td>')+21);
-			$array['latitude'] = trim(strip_tags(substr($aux, 0, strpos($aux, '</td>'))));
-			return $array;
-	}
-
-	return htmlentities(trim(strip_tags($html)));
+	return \josecarlosphp\utils\Internet::getGeoInfo($ip, $que, $defaultip);
 }
 /**
  * Como file_get_contents aplicado a una URL
@@ -498,36 +170,7 @@ function GetGeoInfo($ip='', $que='', $defaultip='clientip')
  */
 function GetURLContents($url, $useragent='', $extraOpt=null, $devolverElError=true)
 {
-	if(function_exists('curl_init'))
-	{
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HEADER, false);
-		if($useragent)
-		{
-			curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
-		}
-		if(is_array($extraOpt))
-		{
-			foreach($extraOpt as $key=>$value)
-			{
-				curl_setopt($ch, $key, $value);
-			}
-		}
-		$str = curl_exec($ch);
-		if($str === false && $devolverElError)
-		{
-			$str = 'Error '.curl_errno($ch).': '.curl_error($ch);
-		}
-		curl_close($ch);
-	}
-	else
-	{
-		$str = file_get_contents($url);
-	}
-
-	return $str;
+	return \josecarlosphp\utils\Internet::getUrlContents($url, $useragent, $extraOpt, $devolverElError);
 }
 /**
  * Transforma una cadena en meta keywords
@@ -542,75 +185,7 @@ function GetURLContents($url, $useragent='', $extraOpt=null, $devolverElError=tr
  */
 function string2keywords($str, $html_entity_decode=false, $maxwords=15, $minlength=3, $flags=ENT_COMPAT, $encoding='UTF-8')
 {
-	$str = trim($str);
-
-	if($str!='')
-	{
-		if($html_entity_decode)
-		{
-			$str = html_entity_decode($str, $flags, $encoding);
-		}
-
-		//Si hago el strtolower antes de reemplazar los caracteres, se me pierden las letras estas
-		//$str = mb_strtolower($str);
-
-		$patrones = array();
-
-		//No estoy haciendo todavía strtolower
-		$patrones[] = array(array('Á','À','Ä','Â'), 'A');
-		$patrones[] = array(array('É','È','Ë','Ê'), 'E');
-		$patrones[] = array(array('Í','È','Ï','Î'), 'I');
-		$patrones[] = array(array('Ó','Ò','Ö','Ô'), 'O');
-		$patrones[] = array(array('Ú','Ù','Ü','Û'), 'U');
-		$patrones[] = array('Ñ', 'n');
-
-		$patrones[] = array(array('á','à','ä','â','Ã¡'), 'a');
-		$patrones[] = array(array('é','è','ë','ê','Ã©'), 'e');
-		$patrones[] = array(array('í','ì','ï','î','Ã­'), 'i');
-		$patrones[] = array(array('ó','ò','ö','ô','Ã³'), 'o');
-		$patrones[] = array(array('ú','ù','ü','û'), 'u');
-		$patrones[] = array('ñ', 'n');
-		$patrones[] = array('€', 'E');
-		$patrones[] = array('$', 'S');
-		$patrones[] = array('.', ' ');
-
-		foreach($patrones as $patron)
-		{
-			$str = str_replace($patron[0], $patron[1], $str);
-		}
-
-		//Ahora hago el strtolower
-		$str = mb_strtolower($str);
-
-		$str = trim(preg_replace('(([^0-9a-zA-Z_\.])+)', ' ', $str));
-
-		//Quitar los dobles espacios
-		while(mb_strpos($str, '  ') !== false)
-		{
-			$str = str_replace('  ', ' ', $str);
-		}
-
-        $tmp = array();
-		$division = explode(' ', $str);
-		foreach($division AS $trozo)
-		{
-			if(mb_strlen($trozo) >= $minlength && !in_array($trozo, $tmp))
-			{
-				$tmp[] = $trozo;
-
-				$maxwords--;
-
-				if($maxwords <= 0)
-				{
-					break;
-				}
-			}
-		}
-
-		$str = implode(', ', $tmp);
-	}
-
-	return $str;
+	return \josecarlosphp\utils\Internet::string2keywords($str, $html_entity_decode, $maxwords, $minlength, $flags, $encoding);
 }
 /**
  * Quita la '/' final de una cadena (si la tiene)
@@ -620,13 +195,7 @@ function string2keywords($str, $html_entity_decode=false, $maxwords=15, $minleng
  */
 function quitarBarra($str)
 {
-	$aux = mb_strlen($str) - 1;
-	if(mb_substr($str, $aux) == '/')
-	{
-		$str = mb_substr($str, 0, $aux);
-	}
-
-	return $str;
+	return \josecarlosphp\utils\Internet::quitarBarra($str);
 }
 /**
  * Quita la '/' inicial de una cadena (si la tiene)
@@ -636,12 +205,7 @@ function quitarBarra($str)
  */
 function quitarBarraIni($str)
 {
-	if(mb_substr($str, 0, 1) == '/')
-	{
-		$str = mb_substr($str, 1);
-	}
-
-	return $str;
+	return \josecarlosphp\utils\Internet::quitarBarraIni($str);
 }
 /**
  * Pone la '/' final de una cadena (si no la tiene)
@@ -651,13 +215,7 @@ function quitarBarraIni($str)
  */
 function ponerBarra($str)
 {
-	$len = mb_strlen($str);
-	if($len == 0 || mb_substr($str, $len-1) != '/')
-	{
-		$str .= '/';
-	}
-
-	return $str;
+	return \josecarlosphp\utils\Internet::ponerBarra($str);
 }
 /**
  * Pone la '/' al inicio de una cadena (si no la tiene)
@@ -667,13 +225,7 @@ function ponerBarra($str)
  */
 function anteponerBarra($str)
 {
-	$len = mb_strlen($str);
-	if($len == 0 || mb_substr($str, 0, 1) != '/')
-	{
-		$str = '/'.$str;
-	}
-
-	return $str;
+	return \josecarlosphp\utils\Internet::anteponerBarra($str);
 }
 /**
  * Obtiene la ruta dentro del dominio según una url
@@ -683,11 +235,7 @@ function anteponerBarra($str)
  */
 function url2path($url)
 {
-	$path = substr($url, strpos($url, '/')+1);
-	$path = substr($path, strpos($path, '/')+1);
-	$path = substr($path, strpos($path, '/')+1);
-
-	return $path;
+	return \josecarlosphp\utils\Internet::url2path($url);
 }
 /**
  * Transforma una cadena en meta description
@@ -704,167 +252,30 @@ function url2path($url)
  */
 function string2description($str, $html_entity_decode=false, $maxlen=180, $desviacion=20, $palabritas=array('a', 'de', 'por', 'para', 'y', 'sin', 'desde', 'con', 'e', 'o', 'ó', 'sus'), $flags=ENT_COMPAT, $encoding='UTF-8', $htmlentities=true)
 {
-    $str = trim(str_replace(array("\n", "\r"), ' ', $str));
-
-	if($html_entity_decode)
-	{
-		$str = html_entity_decode($str, $flags, $encoding);
-	}
-
-	while(mb_strpos($str, '  ') != false)
-	{
-		$str = str_replace('  ', ' ', $str);
-	}
-
-	$cortada = false;
-
-	if($maxlen > 0)
-    {
-        $i = 0;
-        $iMax = 1000;
-		$pos = mb_strrpos($str, ' ');
-		$aux = mb_substr($str, 0, $pos);
-		$max = $maxlen + $desviacion;
-		while($pos !== false && mb_strlen($aux) > $max)
-		{
-            $str = $aux;
-			$pos = mb_strrpos($str, ' ');
-			$aux = mb_substr($str, 0, $pos);
-
-			$cortada = true;
-
-            $i++;
-            if ($i > $iMax) {
-                $str = mb_substr($str, 0, $maxlen);
-                break;
-            }
-		}
-    }
-
-	$pos = mb_strrpos($str, ' ');
-	$ultimaPalabra = mb_substr($str, $pos+1);
-	while(in_array($ultimaPalabra, $palabritas))
-	{
-		$str = mb_substr($str, 0, $pos);
-		$pos = mb_strrpos($str, ' ');
-		$ultimaPalabra = mb_substr($str, $pos+1);
-	}
-
-	$pos = mb_strlen($str) - 1;
-	while($pos && in_array(mb_substr($str, $pos), array(',', ';', '-', '_', '·', '\\', '/', '(', ')', '=', '+', '*', ':', '<'))) //, '>'
-	{
-		$str = mb_substr($str, 0, $pos);
-		$pos--;
-	}
-
-	if($cortada && mb_substr($str, mb_strlen($str)-1) != '.')
-	{
-		$str .= '...';
-	}
-
-	return $htmlentities ? htmlentities($str, $flags, $encoding) : $str;
+    return \josecarlosphp\utils\Internet::string2description($str, $html_entity_decode, $maxlen, $desviacion, $palabritas, $flags, $encoding, $htmlentities);
 }
 
 function utf8_encode_once($str)
 {
-    return is_utf8($str) ? $str : utf8_encode($str);
+    return \josecarlosphp\utils\Internet::utf8_encode_once($str);
 }
 
 function utf8_decode_once($str)
 {
-    return is_utf8($str) ? utf8_decode($str) : $str;
+    return \josecarlosphp\utils\Internet::utf8_decode_once($str);
 }
 
 function is_utf8($str)
 {
-    if(function_exists('mb_detect_encoding'))
-    {
-        return mb_detect_encoding($str.'a', 'UTF-8', true) == 'UTF-8';
-    }
-
-    $c = 0;
-	$b = 0;
-	$bits = 0;
-	$len = strlen($str);
-
-	for($i = 0; $i < $len; $i++)
-	{
-		$c = ord($str[$i]);
-		if($c > 128)
-		{
-			if(($c >= 254))
-				return false;
-			elseif($c >= 252)
-				$bits = 6;
-			elseif($c >= 248)
-				$bits = 5;
-			elseif($c >= 240)
-				$bits = 4;
-			elseif($c >= 224)
-				$bits = 3;
-			elseif($c >= 192)
-				$bits = 2;
-			else
-				return false;
-
-			if(($i + $bits) > $len)
-				return false;
-
-			while($bits > 1)
-			{
-				$i++;
-				$b = ord($str[$i]);
-				if($b < 128 || $b > 191)
-					return false;
-
-				$bits--;
-			}
-		}
-	}
-
-	return true;
+    return \josecarlosphp\utils\Internet::is_utf8($str);
 }
 
 function utf8_encode_file($origen, $destino, $length=null)
 {
-	if(($fpR = fopen($origen, 'r')))
-	{
-		if(($fpW = fopen($destino, 'w')))
-		{
-			while(($line = fgets($fpR, $length)))
-			{
-				if(fputs($fpW, utf8_encode($line), $length) === false)
-				{
-					return false;
-				}
-			}
-
-			fclose($fpR);
-			fclose($fpW);
-
-			return true;
-		}
-	}
-
-	return false;
+	return \josecarlosphp\utils\Internet::utf8_encode_file($origen, $destino, $length);
 }
 
 function pingDomain($domain, &$errno=null, &$errstr=null, $timeout=10)
 {
-    $starttime = microtime(true);
-    $file      = fsockopen($domain, 80, $errno, $errstr, $timeout);
-    $stoptime  = microtime(true);
-    $status    = 0;
-
-    if(!$file)
-	{
-		$status = -1;  // Site is down
-	}
-    else
-	{
-        fclose($file);
-        $status = floor(($stoptime - $starttime) * 1000);
-    }
-
-	return $status;
+    return \josecarlosphp\utils\Internet::pingDomain($domain, $errno, $errstr, $timeout);
 }

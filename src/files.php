@@ -29,7 +29,7 @@
  */
 function include_ifexists($file, $evalonerror='false')
 {
-	return file_exists($file) ? include($file) : eval('return '.$evalonerror.';');
+	return \josecarlosphp\utils\Files::include_ifExists($file, $evalonerror);
 }
 /**
  * @return mixed
@@ -39,7 +39,7 @@ function include_ifexists($file, $evalonerror='false')
  */
 function include_once_ifexists($file, $evalonerror='false;')
 {
-	return file_exists($file) ? include_once($file) : eval('return '.$evalonerror.';');
+	return \josecarlosphp\utils\Files::include_once_ifExists($file, $evalonerror);
 }
 /**
  * @return mixed
@@ -49,7 +49,7 @@ function include_once_ifexists($file, $evalonerror='false;')
  */
 function require_ifexists($file, $evalonerror='false;')
 {
-	return file_exists($file) ? require($file) : eval('return '.$evalonerror.';');
+	return \josecarlosphp\utils\Files::require_ifExists($file, $evalonerror);
 }
 /**
  * @return mixed
@@ -59,7 +59,7 @@ function require_ifexists($file, $evalonerror='false;')
  */
 function require_once_ifexists($file, $evalonerror='false;')
 {
-	return file_exists($file) ? require_once($file) : eval('return '.$evalonerror.';');
+	return \josecarlosphp\utils\Files::require_once_ifExists($file, $evalonerror);
 }
 /**
  * @return array
@@ -71,53 +71,12 @@ function require_once_ifexists($file, $evalonerror='false;')
  */
 function getDirs($dir, $includepath=false, $recursive=false, $mascara='')
 {
-	$pos = strrpos($dir,'/');
-	if($pos == (strlen($dir) - 1))
-    {
-		$dir = substr($dir, 0, $pos);
-    }
-	$dirs = array();
-	$currentdir = getcwd();
-	if(chdir($dir))
-	{
-		$handle = opendir('.');
-        while(($file = readdir($handle)) !== false)
-		{
-			if($file != '.' && $file != '..' && is_dir($file) && ($mascara == '' || mb_strpos($file, $mascara) !== false))
-			{
-				$dirs[] = $includepath ? $dir.'/'.$file : $file;
-
-				if($recursive)
-				{
-					if($includepath)
-					{
-						chdir($currentdir);
-						$dirs = array_merge($dirs, getDirs($dir.'/'.$file,true,true));
-						chdir($dir);
-					}
-					else
-					{
-						$dirs = array_merge($dirs, getDirs($file,false,true));
-					}
-				}
-			}
-		}
-		chdir($currentdir);
-	}
-	return $dirs;
+	return \josecarlosphp\utils\Files::getDirs($dir, $includepath, $recursive, $mascara);
 }
 
 function getSubDirs($dir)
 {
-	$len = mb_strlen($dir);
-	$dirs = getDirs($dir, true, true);
-	sort($dirs);
-	for($c=0,$size=sizeof($dirs); $c<$size; $c++)
-	{
-		$dirs[$c] = mb_substr($dirs[$c], $len);
-	}
-
-	return $dirs;
+	return \josecarlosphp\utils\Files::getSubDirs($dir);
 }
 /**
  * @return array
@@ -127,42 +86,9 @@ function getSubDirs($dir)
  * @param $recursive bool
  * @desc Gets the names of the files existing in a given dir, with dir path if $includepath is true.
  */
-function getFiles($dir,$excludedextensions=array(),$includepath=false,$recursive=false)
+function getFiles($dir, $excludedextensions=array(), $includepath=false, $recursive=false)
 {
-	$pos = strrpos($dir,'/');
-	if($pos == (strlen($dir) - 1))
-	{
-		$dir = substr($dir, 0, $pos);
-	}
-	$files = array();
-	$currentdir = getcwd();
-	if(chdir($dir))
-	{
-		$handle = opendir('.');
-		while(($file = readdir($handle)) !== false)
-		{
-			if($recursive && $file != '.' && $file != '..' && is_dir($file))
-			{
-				if($includepath)
-				{
-					chdir($currentdir);
-					$files = array_merge($files, getFiles($dir.'/'.$file,$excludedextensions,true,true));
-					chdir($dir);
-				}
-				else
-					$files = array_merge($files, getFiles($file,$excludedextensions,false,true));
-			}
-			elseif(is_file($file) && !in_array(getExtension($file),$excludedextensions))
-			{
-				if($includepath)
-					$files[] = $dir.'/'.$file;
-				else
-					$files[] = $file;
-			}
-		}
-		chdir($currentdir);
-	}
-	return $files;
+	return \josecarlosphp\utils\Files::getFiles($dir, $excludedextensions, $includepath, $recursive);
 }
 /**
  * @return array
@@ -174,46 +100,12 @@ function getFiles($dir,$excludedextensions=array(),$includepath=false,$recursive
  */
 function getFilesExt($dir, $includedextensions, $includepath=false, $recursive=false)
 {
-	$pos = strrpos($dir,'/');
-	if($pos == (strlen($dir) - 1))
-	{
-		$dir = substr($dir, 0, $pos);
-	}
-	$files = array();
-	$currentdir = getcwd();
-	if(chdir($dir))
-	{
-		$handle = opendir('.');
-		while(($file = readdir($handle)) !== false)
-		{
-			if($recursive && $file != '.' && $file != '..' && is_dir($file))
-			{
-				if($includepath)
-				{
-					chdir($currentdir);
-					$files = array_merge($files, getFilesExt($dir.'/'.$file,$includedextensions,true,true));
-					chdir($dir);
-				}
-				else
-				{
-					$files = array_merge($files, getFilesExt($file,$includedextensions,false,true));
-				}
-			}
-			elseif(is_file($file) && in_array(getExtension($file),$includedextensions))
-			{
-				$files[] = $includepath ? $dir.'/'.$file : $file;
-			}
-		}
-		chdir($currentdir);
-	}
-
-	return $files;
+	return \josecarlosphp\utils\Files::getFilesExt($dir, $includedextensions, $includepath, $recursive);
 }
 
 function getRandomFileExt($dir, $includedextensions, $includepath=false)
 {
-	$files = getFilesExt($dir, $includedextensions, $includepath, false);
-	return $files[mt_rand(0, sizeof($files)-1)];
+	return \josecarlosphp\utils\Files::getRandomFileExt($dir, $includedextensions, $includepath);
 }
 /**
  * Obtiene el árbol de carpetas y archivos de un directorio.
@@ -223,21 +115,7 @@ function getRandomFileExt($dir, $includedextensions, $includepath=false)
  */
 function getTree($dir)
 {
-    $result = array();
-
-    $aux = getDirs($dir);
-    foreach($aux as $item)
-    {
-        $result[$item] = getTree(ponerBarra($dir).$item);
-    }
-
-    $aux = getFiles($dir);
-    foreach($aux as $item)
-    {
-        $result[$item] = $item;
-    }
-
-    return $result;
+    return \josecarlosphp\utils\Files::getTree($dir);
 }
 /**
  * @return int
@@ -246,31 +124,9 @@ function getTree($dir)
  * @param $including bool
  * @desc Gets the number of dirs existing in a given dir, excluding (default) or including only the ones wich extension is in $extensions
  */
-function countDirs($dir,$extensions=array(),$including=false)
+function countDirs($dir, $extensions=array(), $including=false)
 {
-	$currentdir = getcwd();
-	chdir($dir);
-	$handle = opendir('.');
-	$count = 0;
-	while(($file = readdir($handle)) !== false)
-	{
-		if($including)
-		{
-			if($file != '.' && $file != '..' && is_dir($file) && in_array(getExtension($file), $extensions))
-            {
-				$count++;
-            }
-		}
-		else
-		{
-			if($file != '.' && $file != '..' && is_dir($file) && !in_array(getExtension($file), $extensions))
-            {
-				$count++;
-            }
-		}
-	}
-	chdir($currentdir);
-	return $count;
+	return \josecarlosphp\utils\Files::countDirs($dir, $extensions, $including);
 }
 /**
  * @return int
@@ -279,27 +135,9 @@ function countDirs($dir,$extensions=array(),$including=false)
  * @param $including bool
  * @desc Gets the number of files existing in a given dir, excluding (default) or including only the ones wich extension is in $extensions
  */
-function countFiles($dir,$extensions=array(),$including=false)
+function countFiles($dir, $extensions=array(), $including=false)
 {
-	$currentdir = getcwd();
-	chdir($dir);
-	$handle = opendir('.');
-	$count = 0;
-	while(($file = readdir($handle)) !== false)
-	{
-		if($including)
-		{
-			if(is_file($file) && in_array(getExtension($file),$extensions))
-				$count++;
-		}
-		else
-		{
-			if(is_file($file) && !in_array(getExtension($file),$extensions))
-				$count++;
-		}
-	}
-	chdir($currentdir);
-	return $count;
+	return \josecarlosphp\utils\Files::countFiles($dir, $extensions, $including);
 }
 /**
  * @return string
@@ -309,21 +147,7 @@ function countFiles($dir,$extensions=array(),$including=false)
  */
 function getExtension($file, $tolower=true)
 {
-	$file = basename($file);
-	$pos = strrpos($file, '.');
-
-	if($file == '' || $pos === false)
-	{
-		return '';
-	}
-
-	$extension = substr($file, $pos+1);
-	if($tolower)
-	{
-		$extension = strtolower($extension);
-	}
-
-	return $extension;
+	return \josecarlosphp\utils\Files::getExtension($file, $tolower);
 }
 /**
  * @return string
@@ -332,8 +156,7 @@ function getExtension($file, $tolower=true)
  */
 function getName($file, $tolower=false)
 {
-	$name = ($dotpos = strrpos($file, '.')) ? substr($file, 0, $dotpos) : $file;
-	return $tolower ? mb_strtolower($name) : $name;
+	return \josecarlosphp\utils\Files::getName($file, $tolower);
 }
 /**
  * @return bool
@@ -342,12 +165,7 @@ function getName($file, $tolower=false)
  */
 function deleteFile($file)
 {
-	if(is_file($file))
-	{
-		return unlink($file);
-	}
-
-	return true;
+	return \josecarlosphp\utils\Files::deleteFile($file);
 }
 /**
  * @return bool
@@ -357,17 +175,7 @@ function deleteFile($file)
  */
 function deleteDir($dir, $deleteevenifnotempty=true)
 {
-	if(is_dir($dir))
-	{
-		if(is_emptyDir($dir))
-		{
-			return rmdir($dir);
-		}
-
-		return $deleteevenifnotempty ? drainDir($dir) && rmdir($dir) : false;
-	}
-
-	return true;
+	return \josecarlosphp\utils\Files::deleteDir($dir, $deleteevenifnotempty);
 }
 /**
  * @return bool
@@ -378,30 +186,7 @@ function deleteDir($dir, $deleteevenifnotempty=true)
  */
 function drainDir($dir, $createifnotexists=true, $mode=0755)
 {
-	if(is_dir($dir))
-	{
-		$currentdir = getcwd();
-		chdir($dir);
-		$handle = opendir('.');
-        while(($file = readdir($handle)) !== false)
-		{
-			if($file != '.' && $file != '..' && is_dir($file))
-            {
-				deleteDir($file);
-            }
-			elseif(is_file($file))
-            {
-				unlink($file);
-            }
-		}
-		closedir($handle);
-		chdir($currentdir);
-	}
-	elseif($createifnotexists)
-	{
-		mkdir($dir, $mode);
-	}
-	return is_emptyDir($dir);
+	return \josecarlosphp\utils\Files::drainDir($dir, $createifnotexists, $mode);
 }
 /**
  * @return bool
@@ -412,23 +197,7 @@ function drainDir($dir, $createifnotexists=true, $mode=0755)
  */
 function makeDir($dir, $mode=0755, $drainifexists=false)
 {
-	if(is_dir($dir))
-	{
-		if($drainifexists)
-		{
-			drainDir($dir);
-		}
-	}
-	else
-	{
-		$padre = dirname($dir);
-		if($padre && makeDir($padre))
-		{
-			mkdir($dir, $mode);
-		}
-	}
-
-	return is_dir($dir);
+	return \josecarlosphp\utils\Files::makeDir($dir, $mode, $drainifexists);
 }
 /**
  * @return bool
@@ -437,53 +206,12 @@ function makeDir($dir, $mode=0755, $drainifexists=false)
  */
 function is_emptyDir($dir)
 {
-	if(is_dir($dir))
-	{
-		$isempty = true;
-		$currentdir = getcwd();
-		chdir($dir);
-		$handle = opendir('.');
-		while(($file = readdir($handle)) !== false)
-		{
-			if(($file != '.' && $file != '..' && is_dir($file)) || is_file($file))
-			{
-				$isempty = false;
-				break;
-			}
-		}
-		closedir($handle);
-		chdir($currentdir);
-		return $isempty;
-	}
-	return false;
+	return \josecarlosphp\utils\Files::is_emptyDir($dir);
 }
 
 function dirsize($dir)
 {
-	$size = 0;
-	$pos = strrpos($dir,'/');
-	if($pos == (strlen($dir) - 1))
-	{
-		$dir = substr($dir, 0, $pos);
-	}
-	$currentdir = getcwd();
-	if(chdir($dir))
-	{
-		$handle = opendir('.');
-		while(($file = readdir($handle)) !== false)
-		{
-			if($file != '.' && $file != '..' && is_dir($file))
-			{
-				$size += dirsize($file);
-			}
-			elseif(is_file($file))
-			{
-				$size += filesize($file);
-			}
-		}
-		chdir($currentdir);
-	}
-	return $size;
+	return \josecarlosphp\utils\Files::dirsize($dir);
 }
 /**
  * Elimina los archivos de un directorio.
@@ -499,47 +227,7 @@ function dirsize($dir)
  */
 function deleteFiles($dir, &$c, $exts=null, $mascara='', $recursivo=false, $antiguedad=0, $excluidos=array())
 {
-	$c = 0;
-	$ok = true;
-	if(is_dir($dir))
-	{
-		$currentdir = getcwd();
-		chdir($dir);
-		$handle = opendir('.');
-		while(($file = readdir($handle)) !== false)
-		{
-			if(is_file($file))
-			{
-                if(($antiguedad == 0 || time() - filemtime($file) > $antiguedad) && !in_array($file, $excluidos))
-                {
-                    $extension = getExtension($file);
-                    if((is_null($exts) || (is_array($exts) && in_array($extension, $exts)) || (is_string($exts) && $extension == $exts))
-                        &&
-                        ($mascara == '' || mb_strpos(getName($file), $mascara) !== false))
-                    {
-                        if(unlink($file))
-                        {
-                            $c++;
-                        }
-                        else
-                        {
-                            $ok = false;
-                        }
-                    }
-                }
-			}
-			elseif($recursivo && $file != '.' && $file != '..' && is_dir($file))
-			{
-				$z = 0;
-				$ok &= deleteFiles($dir, $z, $exts, $mascara, true);
-				$c += $z;
-			}
-		}
-		closedir($handle);
-		chdir($currentdir);
-	}
-
-	return $ok;
+	return \josecarlosphp\utils\Files::deleteFiles($dir, $c, $exts, $mascara, $recursivo, $antiguedad, $excluidos);
 }
 /**
  * Copia el contenido de un directorio a otro
@@ -551,26 +239,7 @@ function deleteFiles($dir, &$c, $exts=null, $mascara='', $recursivo=false, $anti
  */
 function copyDir($src, $dst, $moddir=0755)
 {
-	$ok = true;
-	$dir = opendir($src);
-	makeDir($dst, $moddir);
-	while(($file = readdir($dir)) !== false)
-	{
-		if($file != '.' && $file != '..')
-		{
-			if(is_dir($src.'/'.$file))
-			{
-				$ok &= copyDir($src.'/'.$file, $dst.'/'.$file, $moddir);
-			}
-			else
-			{
-				$ok &= copy($src.'/'.$file, $dst.'/'.$file);
-			}
-		}
-	}
-	closedir($dir);
-
-	return $ok;
+	return \josecarlosphp\utils\Files::copyDir($src, $dst, $moddir);
 }
 /**
  * @desc Comprime un archivo
@@ -603,19 +272,5 @@ function comprimir($filename)
 
 function isParentDir($dir, $son)
 {
-    $ok = false;
-    $cwd = getcwd();
-    if (chdir($dir)) {
-        $dir = getcwd(); //Para que sea ruta absoluta
-        chdir($cwd);
-
-        if ($son && is_dir($aux = (is_file($son) ? dirname($son) : $son)) && chdir($aux)) {
-            if (mb_substr(getcwd(), 0, mb_strlen($dir)) == $dir) {
-                $ok = true;
-            }
-            chdir($cwd);
-        }
-    }
-
-    return $ok;
+    return \josecarlosphp\utils\Files::isParentDir($dir, $son);
 }

@@ -31,57 +31,7 @@ use josecarlosphp\db\DbConnection;
  */
 function buildQuery_Insert($data, $table, $onDuplicateKeyUpdate=false)
 {
-	$query = "INSERT INTO `".$table."`(";
-	$keys = array_keys($data);
-	for($c=0,$size=sizeof($data); $c<$size; $c++)
-	{
-        if(is_array($data[$keys[$c]]) || is_object($data[$keys[$c]]))
-        {
-            $data[$keys[$c]] = serialize($data[$keys[$c]]);
-        }
-        elseif($data[$keys[$c]] === true)
-        {
-            $data[$keys[$c]] = 1;
-        }
-        elseif($data[$keys[$c]] === false)
-        {
-            $data[$keys[$c]] = 0;
-        }
-
-		if($c > 0)
-		{
-			$query .= ', ';
-		}
-		$query .= "`".$keys[$c]."`";
-	}
-	$query .= ") VALUES(";
-	for($c=0; $c<$size; $c++)
-	{
-		if($c > 0)
-		{
-			$query .= ', ';
-		}
-        $query .= is_null($data[$keys[$c]]) ? 'NULL' : sprintf("'%s'", addcslashes($data[$keys[$c]], "\\'"));
-	}
-
-	$query .= ")";
-
-	if($onDuplicateKeyUpdate)
-	{
-		$query .= " ON DUPLICATE KEY UPDATE ";
-		$keys = array_keys($data);
-		for($c=0,$size; $c<$size; $c++)
-		{
-			if($c > 0)
-			{
-				$query .= ", ";
-			}
-            $query .= sprintf("`%s` = ", $keys[$c]);
-            $query .= is_null($data[$keys[$c]]) ? 'NULL' : sprintf("'%s'", addcslashes($data[$keys[$c]], "\\'"));
-		}
-	}
-
-	return $query.';';
+	return \josecarlosphp\utils\Sql::buildQuery_Insert($data, $table, $onDuplicateKeyUpdate);
 }
 /**
  * @return string
@@ -92,37 +42,7 @@ function buildQuery_Insert($data, $table, $onDuplicateKeyUpdate=false)
  */
 function buildQuery_Update($data, $table, $ids=null, $devolverVacio=false)
 {
-    if(empty($data))
-    {
-        $data = is_array($ids) ? $ids : array('id'=>$ids);
-    }
-
-	$query = "UPDATE `".$table."` SET ";
-	$keys = array_keys($data);
-	for($c=0,$size=sizeof($data); $c<$size; $c++)
-	{
-        if(is_array($data[$keys[$c]]) || is_object($data[$keys[$c]]))
-        {
-            $data[$keys[$c]] = serialize($data[$keys[$c]]);
-        }
-        elseif($data[$keys[$c]] === true)
-        {
-            $data[$keys[$c]] = 1;
-        }
-        elseif($data[$keys[$c]] === false)
-        {
-            $data[$keys[$c]] = 0;
-        }
-
-		if($c > 0)
-		{
-			$query .= ', ';
-		}
-		$query .= sprintf("`%s` = ", $keys[$c]);
-        $query .= is_null($data[$keys[$c]]) ? 'NULL' : sprintf("'%s'", addcslashes($data[$keys[$c]], "\\'"));
-	}
-
-	return $query.DbConnection::ids2where($ids, $devolverVacio).";";
+    return \josecarlosphp\utils\Sql::buildQuery_Update($data, $table, $ids, $devolverVacio);
 }
 /**
  * @return string
@@ -131,7 +51,7 @@ function buildQuery_Update($data, $table, $ids=null, $devolverVacio=false)
  */
 function buildQuery_Delete($table, $ids=null)
 {
-	return "DELETE FROM `".$table."`".DbConnection::ids2where($ids).";";
+	return \josecarlosphp\utils\Sql::buildQuery_Delete($table, $ids);
 }
 /**
  * Une una condición where y un filtro que puede contener where, order by,...
@@ -142,25 +62,5 @@ function buildQuery_Delete($table, $ids=null)
  */
 function mergeWhereFiltro($where='', $filtro='')
 {
-	$filtro = trim($filtro);
-	if($filtro)
-	{
-		if($where)
-		{
-			if(strtoupper(substr($filtro, 0, 6)) == 'WHERE ')
-			{
-				$filtro = $where.' AND ('.substr($filtro, 6).')';
-			}
-			else
-			{
-				$filtro = $where.' '.$filtro;
-			}
-		}
-	}
-	else
-	{
-		$filtro = $where;
-	}
-
-	return $filtro;
+	return \josecarlosphp\utils\Sql::mergeWhereFilter($where, $filtro);
 }

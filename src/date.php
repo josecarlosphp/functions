@@ -31,17 +31,7 @@
  */
 function calcularEdad($dia, $mes ,$ano)
 {
-    $edad = date("Y") - $ano - 1; //-1 porque no sé si ha cumplido años ya este año
-    if($edad >= 0)
-    {
-        $difMeses = date("n") - $mes;
-        if($difMeses == 0)
-        {
-            return ((date("j") - $dia) < 0) ? $edad : $edad+1;
-        }
-        return ($difMeses < 0) ? $edad : $edad+1;
-    }
-    return false;
+    return \josecarlosphp\utils\Dates::calculateAge($dia, $mes, $ano);
 }
 /**
  * Calcula la edad para una fecha dada
@@ -52,103 +42,43 @@ function calcularEdad($dia, $mes ,$ano)
  */
 function calcularEdadStr($fecha, $formato='Y-m-d')
 {
-	$arr = descomponerFecha($fecha, $formato);
-
-	return calcularEdad($arr[2], $arr[1], $arr[0]);
+	return \josecarlosphp\utils\Dates::calculateAgeStr($fecha, $formato);
 }
 
 function descomponerFecha($fecha, $formato='Y-m-d')
 {
-	switch(mb_strtolower($formato))
-    {
-    	case 'd-m-y':
-    	case 'd/m/y':
-    	case 'd-m-a':
-    	case 'd/m/a':
-    	case 'dd-mm-yyyy':
-    	case 'dd/mm/yyyy':
-    	case 'dd-mm-aaaa':
-    	case 'dd/mm/aaaa':
-    		$ano = intval(substr($fecha, 6, 4));
-    		$mes = intval(substr($fecha, 3, 2));
-    		$dia = intval(substr($fecha, 0, 2));
-    		break;
-		default:
-    	case 'y-m-d':
-    	case 'y/m/d':
-    	case 'a-m-d':
-    	case 'a/m/d':
-    	case 'yyyy-mm-dd':
-    	case 'yyyy/mm/dd':
-    	case 'aaaa-mm-dd':
-    	case 'aaaa/mm/dd':
-    		$ano = intval(substr($fecha, 0, 4));
-    		$mes = intval(substr($fecha, 5, 2));
-    		$dia = intval(substr($fecha, 8, 2));
-    		break;
-    }
-
-    if(strlen($fecha > 10))
-    {
-        $hora = intval(substr($fecha, 11, 2));
-        $minuto = intval(substr($fecha, 14, 2));
-        $segundo = intval(substr($fecha, 17, 2));
-    }
-    else
-    {
-        $hora = 0;
-        $minuto = 0;
-        $segundo = 0;
-    }
-
-    return array($ano, $mes, $dia, $hora, $minuto, $segundo);
+	return \josecarlosphp\utils\Dates::breakdownDate($fecha, $formato);
 }
 
 //Porque se definió así y se usa aún en algún código
 function fechayhora2time($fechayhora)
 {
-    return fecha2time($fechayhora);
+    return \josecarlosphp\utils\Dates::datetime2time($fechayhora);
 }
 
 function fecha2time($fecha, $formato='Y-m-d')
 {
-    $arr = descomponerFecha($fecha, $formato);
-
-    return mktime($arr[3], $arr[4], $arr[5], $arr[1], $arr[2], $arr[0]);
+    return \josecarlosphp\utils\Dates::date2time($fecha, $formato);
 }
 
 function fechayhora2screen($fecha, $formato='Y-m-d')
 {
-    $arr = descomponerFecha($fecha, $formato);
-
-    return sprintf('%04s-%02s-%02s <span class="small mini">%02s:%02s</span>', $arr[0], $arr[1], $arr[2], $arr[3], $arr[4]);
+    return \josecarlosphp\utils\Dates::datetime2screen($fecha, $formato);
 }
 
-function fechaYmd2dmY($fecha, $separador="-")
+function fechaYmd2dmY($fecha, $separador='-')
 {
-    $ano = substr($fecha, 0, 4);
-    $mes = substr($fecha, 5, 2);
-    $dia = substr($fecha, 8, 2);
-
-    return "{$dia}{$separador}{$mes}{$separador}{$ano}";
+    return \josecarlosphp\utils\Dates::Ymd2dmY($fecha, $separador);
 }
 
-function fechaYmd2dma($fecha, $separador="-")
+function fechaYmd2dma($fecha, $separador='-')
 {
-    $ano = substr($fecha, 2, 2);
-    $mes = substr($fecha, 5, 2);
-    $dia = substr($fecha, 8, 2);
-
-    return "{$dia}{$separador}{$mes}{$separador}{$ano}";
+    return \josecarlosphp\utils\Dates::Ymd2dma($fecha, $separador);
 }
 
-function fechadmY2Ymd($fecha, $separador="-")
+function fechadmY2Ymd($fecha, $separador='-')
 {
-    $ano = substr($fecha, 6, 4);
-    $mes = substr($fecha, 3, 2);
-    $dia = substr($fecha, 0, 2);
-
-    return "{$ano}{$separador}{$mes}{$separador}{$dia}";
+    return \josecarlosphp\utils\Dates::dmY2Ymd($fecha, $separador);
 }
 
 /**
@@ -163,41 +93,12 @@ function fechadmY2Ymd($fecha, $separador="-")
  */
 function getNumDaysOfMonth($mes, $ano)
 {
-    $dias = array(
-        1=>31,
-        2=>28,
-        3=>31,
-        4=>30,
-        5=>31,
-        6=>30,
-        7=>31,
-        8=>31,
-        9=>30,
-        10=>31,
-        11=>30,
-        12=>31,
-        );
-
-    $mes = intval($mes);
-
-    while($mes < 1)
-    {
-        $mes += 12;
-        $ano--;
-    }
-
-    while($mes > 12)
-    {
-        $mes -= 12;
-        $ano++;
-    }
-
-    return ($mes == 2 && checkdate(2, 29, $ano)) ? $dias[$mes]+1 : $dias[$mes];
+    return \josecarlosphp\utils\Dates::getNumDaysOfMonth($mes, $ano);
 }
 
-function getLastDayOfMonth($mes, $ano, $format="Y-m-d")
+function getLastDayOfMonth($mes, $ano, $format='Y-m-d')
 {
-    return date($format, fecha2time(sprintf("%04s-%02s-%02s", $ano, $mes, getNumDaysOfMonth($mes, $ano))));
+    return \josecarlosphp\utils\Dates::getLastDayOfMonth($mes, $ano, $format);
 }
 /**
  * Añade días a una fecha
@@ -209,36 +110,7 @@ function getLastDayOfMonth($mes, $ano, $format="Y-m-d")
  */
 function AddDays($date, $days, $workonly=false)
 {
-    if($days < 0)
-    {
-        return SusDays($date, $days, $workonly);
-    }
-
-    $mes = substr($date,5,2);
-    $dia = substr($date,8,2);
-    $ano = substr($date,0,4);
-    $time = mktime(0, 0, 0, $mes, $dia, $ano);
-    while($days > 0)
-    {
-        $ok = true;
-        if($workonly)
-        {
-            $day = date('w', $time);
-            if($day < 1 || $day > 5)
-            {
-                $ok = false;
-            }
-        }
-        if($ok)
-        {
-            $days--;
-        }
-
-        $dia++;
-        $time = mktime(0, 0, 0, $mes, $dia, $ano);
-    }
-
-    return date('Y-m-d', $time);
+    return \josecarlosphp\utils\Dates::addDays($date, $days, $workonly);
 }
 /**
  * Resta días a una fecha
@@ -250,31 +122,7 @@ function AddDays($date, $days, $workonly=false)
  */
 function SusDays($date, $days, $workonly=false)
 {
-    $mes = substr($date,5,2);
-    $dia = substr($date,8,2);
-    $ano = substr($date,0,4);
-    $time = mktime(0, 0, 0, $mes, $dia, $ano);
-    while($days < 0)
-    {
-        $ok = true;
-        if($workonly)
-        {
-            $day = date('w', $time);
-            if($day < 1 || $day > 5)
-            {
-                $ok = false;
-            }
-        }
-        if($ok)
-        {
-            $days++;
-        }
-
-        $dia--;
-        $time = mktime(0, 0, 0, $mes, $dia, $ano);
-    }
-
-    return date('Y-m-d', $time);
+    return \josecarlosphp\utils\Dates::susDays($date, $days, $workonly);
 }
 /**
  * Añade meses a una fecha
@@ -285,10 +133,7 @@ function SusDays($date, $days, $workonly=false)
  */
 function AddMonths($date, $meses)
 {
-    $mes = substr($date,5,2);
-    $dia = substr($date,8,2);
-    $ano = substr($date,0,4);
-    return date('Y-m-d', mktime(0, 0, 0, $mes+$meses, $dia, $ano));
+    return \josecarlosphp\utils\Dates::addMonths($date, $meses);
 }
 /**
  * Diferencia en días entre dos fechas en formato dd/mm/yyyy
@@ -301,27 +146,27 @@ function AddMonths($date, $meses)
  */
 function DaysDifference($desde, $hasta, $formato='dd/mm/yyyy')
 {
-    return DaysDifferenceTime(fecha2time($desde, $formato), fecha2time($hasta, $formato));
+    return \josecarlosphp\utils\Dates::daysDifference($desde, $hasta, $formato);
 }
 
 function DaysDifferenceYmd($desde, $hasta)
 {
-    return DaysDifference($desde, $hasta, 'yyyy-mm-dd');
+    return \josecarlosphp\utils\Dates::daysDifferenceYmd($desde, $hasta);
 }
 
 function DaysDifferencedmY($desde, $hasta)
 {
-    return DaysDifference($desde, $hasta, 'dd/mm/yyyy');
+    return \josecarlosphp\utils\Dates::daysDifferencedmY($desde, $hasta);
 }
 
 function DaysDifferenceTime($desde, $hasta)
 {
-	return floor(($hasta - $desde) / 86400);
+	return \josecarlosphp\utils\Dates::daysDifferenceTime($desde, $hasta);
 }
 
 function GetDiaSemana($dia, $mes, $ano)
 {
-    return date('w', mktime(0, 0, 0, $mes, $dia, $ano));
+    return \josecarlosphp\utils\Dates::getWeekday($dia, $mes, $ano);
 }
 /**
  * Convierte una cadena de fecha en formato dd/mm/aaaa ó yyyy-mm-dd en un array(año, mes, día)
@@ -331,50 +176,15 @@ function GetDiaSemana($dia, $mes, $ano)
  */
 function datestr2datearr($date)
 {
-	return !is_numeric(substr($date, 2, 1)) && !is_numeric(substr($date, 5, 1)) ?
-		array(substr($date, 6, 4), substr($date, 3, 2), substr($date, 0, 2))
-		:
-		array(substr($date, 0, 4), substr($date, 5, 2), substr($date, 8, 2));
+	return \josecarlosphp\utils\Dates::datestr2datearr($date);
 }
 
 function time2tiempo($time)
 {
-	$dias = floor($time / 86400);
-	$time -= ($dias * 86400);
-
-	$horas = floor($time / 3600);
-	$time -= ($horas * 3600);
-
-	$minutos = floor($time / 60);
-	$time -= ($minutos * 60);
-
-	return array('d'=>$dias, 'H'=>$horas, 'i'=>$minutos, 's'=>$time);
+	return \josecarlosphp\utils\Dates::time2tiempo($time);
 }
 
 function tiempo2str($tiempo)
 {
-    $r = '';
-	$sep = '';
-
-	if($tiempo['d'] > 0)
-	{
-		$r .= sprintf('%u %s', $tiempo['d'], $tiempo['d'] == 1 ? 'día' : 'días');
-		$sep = ', ';
-	}
-
-	if($tiempo['d'] > 0 || $tiempo['H'] > 0)
-	{
-		$r .= sprintf('%s%u %s', $sep, $tiempo['H'], $tiempo['H'] == 1 ? 'hora' : 'horas');
-		$sep = ', ';
-	}
-
-	if($tiempo['d'] > 0 || $tiempo['H'] > 0 || $tiempo['i'] > 0)
-	{
-		$r .= sprintf('%s%u %s', $sep, $tiempo['i'], $tiempo['i'] == 1 ? 'minuto' : 'minutos');
-		$sep = ', ';
-	}
-
-	$r .= sprintf('%s%u %s', $sep, $tiempo['s'], $tiempo['s'] == 1 ? 'segundo' : 'segundos');
-
-	return $r;
+    return \josecarlosphp\utils\Dates::tiempo2str($tiempo);
 }
