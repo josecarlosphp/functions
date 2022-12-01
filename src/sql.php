@@ -21,8 +21,6 @@
  * @desc        Common use functions - sql.
  */
 
-use josecarlosphp\db\DbConnection;
-
 /**
  * @return string
  * @param array $data
