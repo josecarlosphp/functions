@@ -75,7 +75,7 @@ function xmlfile2csvfile($xmlpath, $csvpath, $elementTag, $fieldsTags, $delimite
  */
 function xmlfile2csvfileB($xmlpath, $csvpath, $elementTag, $fieldsTags=array(), $delimiter=',', $enclosure='"', $tagComb='', $fieldsTagsComb=array(), $xmlTo='xml', $trim=true)
 {
-	self::xmlfile2csvfileB($xmlpath, $csvpath, $elementTag, $fieldsTags, $delimiter, $enclosure, $tagComb, $fieldsTagsComb, $xmlTo, $trim);
+	\josecarlosphp\utils\Xml::xmlfile2csvfileB($xmlpath, $csvpath, $elementTag, $fieldsTags, $delimiter, $enclosure, $tagComb, $fieldsTagsComb, $xmlTo, $trim);
 }
 
 function xmlfile2cabecera($xmlpath, $elementTag)
