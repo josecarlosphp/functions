@@ -155,7 +155,7 @@ function array_walk2(&$array, $funcname)
  */
 function array_clone($array)
 {
-	return \josecarlosphp\utils\Arrays::clone($array);
+	return \josecarlosphp\utils\Arrays::clon($array);
 }
 /**
  * Ordena aleatoriamente los elementos de un array asociativo
