@@ -80,5 +80,5 @@ function xmlfile2csvfileB($xmlpath, $csvpath, $elementTag, $fieldsTags=array(), 
 
 function xmlfile2cabecera($xmlpath, $elementTag)
 {
-	return \josecarlosphp\utils\Xml::xmlsfile2header($xmlpath, $elementTag);
+	return \josecarlosphp\utils\Xml::xmlfile2header($xmlpath, $elementTag);
 }
