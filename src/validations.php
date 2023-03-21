@@ -29,7 +29,7 @@
  */
 function validateEmail($var, $allowblank=false)
 {
-	return \josecarlosphp\utils\Validations::validateEnail($var, $allowblank);
+	return \josecarlosphp\utils\Validations::validateEmail($var, $allowblank);
 }
 /**
  * @return bool
